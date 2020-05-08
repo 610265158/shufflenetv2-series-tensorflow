@@ -166,7 +166,7 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0',include_head=Fal
                 if not include_head:
                     return  [net,block1,block2,block3]
                 if include_head:
-                    x = slim.conv2d(net,
+                    x = slim.conv2d(block3,
                                     num_outputs=1024,
                                     kernel_size=[1, 1],
                                     stride=1,
