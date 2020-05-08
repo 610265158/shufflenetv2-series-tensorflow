@@ -361,7 +361,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
                                     normalizer_fn=slim.batch_norm,
                                     scope='fc')
 
-                    x=slim.dropout(x,0.5)
+                    x=slim.dropout(x,0.8)
 
                     x=slim.conv2d(x,
                                     num_outputs=cfg.MODEL.cls,

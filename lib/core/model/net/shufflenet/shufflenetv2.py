@@ -143,7 +143,7 @@ def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
 
 
 
-def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0'):
+def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0',include_head=False):
     possibilities = {'0.5': 48,'0.75':64, '1.0': 120, '1.5': 176, '2.0': 224}
     initial_depth = possibilities[depth_multiplier]
 
@@ -155,8 +155,7 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0'):
                 net = slim.conv2d(inputs, 24, [3, 3],stride=2, activation_fn=tf.nn.relu,
                                   normalizer_fn=slim.batch_norm, scope='init_conv')
 
-                net = slim.separable_conv2d(net, 32, [5, 5], stride=2, activation_fn=tf.nn.relu,
-                                          normalizer_fn=slim.batch_norm, scope='init_conv_2', depth_multiplier=1)
+                net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='SAME')
 
                 block1 = block(net, num_units=4, out_channels=initial_depth, scope='Stage2')
 
@@ -164,7 +163,42 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0'):
 
                 block3 = block(block2, num_units=4, out_channels=initial_depth*4, scope='Stage4')
 
-    return  [net,block1,block2,block3]
+                if not include_head:
+                    return  [net,block1,block2,block3]
+                if include_head:
+                    x = slim.conv2d(net,
+                                    num_outputs=1024,
+                                    kernel_size=[1, 1],
+                                    stride=1,
+                                    activation_fn=tf.nn.relu,
+                                    normalizer_fn=slim.batch_norm,
+                                    scope='conv_last')
 
+                    x=tf.reduce_mean(x,axis=[1,2],keep_dims=True)
+
+
+
+                    x = slim.conv2d(x,
+                                    num_outputs=1024,
+                                    kernel_size=[1, 1],
+                                    stride=1,
+                                    activation_fn=tf.nn.relu,
+                                    normalizer_fn=slim.batch_norm,
+                                    scope='fc')
+
+                    x=slim.dropout(x,0.8)
+
+                    x=slim.conv2d(x,
+                                    num_outputs=cfg.MODEL.cls,
+                                    kernel_size=[1, 1],
+                                    stride=1,
+                                    activation_fn=None,
+                                    normalizer_fn=None,
+                                    scope='cls')
+
+        x=tf.squeeze(x, axis=1)
+        x = tf.squeeze(x, axis=1)
+        x=tf.identity(x,name='cls_output')
+    return x
 
 
