@@ -75,34 +75,14 @@ class trainner():
                 saver2 = tf.train.Saver(variables_restore)
                 saver2.restore(self._sess, cfg.MODEL.pretrained_model)
 
-            elif cfg.MODEL.pretrained_model is not None  and not cfg.MODEL.pruning:
+            elif cfg.MODEL.pretrained_model is not None :
                 #########################restore the params
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
                 print(variables_restore)
 
                 saver2 = tf.train.Saver(variables_restore)
                 saver2.restore(self._sess, cfg.MODEL.pretrained_model)
-            elif cfg.MODEL.pruning:
-                #########################restore the params
-                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES)
-                print(variables_restore)
-                #    print('......................................................')
-                #    # saver2 = tf.train.Saver(variables_restore)
-                variables_restore_n = [v for v in variables_restore if
-                                       'output' not in v.name]  # Conv2d_1c_1x1 Bottleneck
-                # print(variables_restore_n)
 
-                state_dict=np.load(cfg.MODEL.pretrained_model)
-
-                state_dict=state_dict['arr_0'][()]
-
-                for var in variables_restore_n:
-                    var_name=var.name.rsplit(':')[0]
-                    if var_name in state_dict:
-                        logger.info('recover %s from npz file'%var_name)
-                        self._sess.run(tf.assign(var, state_dict[var_name]))
-                    else:
-                        logger.info('the params of %s not in npz file'%var_name)
             else:
                 logger.info('no pretrained model, train from sctrach')
                 # Build an initialization operation to run below.
@@ -128,10 +108,10 @@ class trainner():
         # Build the portion of the Graph calculating the losses. Note that we will
         # assemble the total_loss using a custom function below.
 
-        logits = ShufflenetV2Plus(images, labels,training,include_head=True)
+        logits = ShufflenetV2Plus(images,training,include_head=True)
 
-
-        cls_loss=slim.losses.softmax_cross_entropy(logits=logits,labels=labels,label_smoothing=0.1)
+        onehot_labels=tf.one_hot(labels,depth=cfg.MODEL.cls)
+        cls_loss=slim.losses.softmax_cross_entropy(logits=logits,onehot_labels=onehot_labels,label_smoothing=0.1)
 
 
         predicts = tf.nn.softmax(logits=logits)
@@ -211,7 +191,7 @@ class trainner():
                             with slim.arg_scope([slim.model_variable, slim.variable], device='/cpu:0'):
                                 images_ = tf.placeholder(tf.float32, [None, cfg.MODEL.hin, cfg.MODEL.win, 3],
                                                          name="images")
-                                labels_ = tf.placeholder(tf.float32, [None, 1], name="labels")
+                                labels_ = tf.placeholder(tf.int64, [None], name="labels")
                                 images_place_holder_list.append(images_)
                                 labels_place_holder_list.append(labels_)
 
@@ -346,20 +326,13 @@ class trainner():
             ########show_flag check the data
             if cfg.TRAIN.vis:
                 for i in range(cfg.TRAIN.batch_size):
-                    example_image = example_images[i, :, :, :]/255.
-                    example_label = example_labels[i,:]
+                    example_image = example_images[i, :, :, :]
+                    example_label = example_labels[i]
 
 
-                    Landmark=example_label[0:136]
-                    cla=example_label[136:]
-
-                    print(cla)
-
-                    # cv2.putText(img_show, 'left_eye:open', (xmax, ymin),
-                    #             cv2.FONT_HERSHEY_SIMPLEX, 1,
-                    #             (255, 0, 255), 2)
+                    print(example_label)
                     cv2.namedWindow('img', 0)
-                    cv2.imshow('img', example_image)
+                    cv2.imshow('img', example_image.astype(np.uint8))
                     cv2.waitKey(0)
 
             fetch_duration = time.time() - start_time
@@ -367,7 +340,7 @@ class trainner():
             feed_dict = {}
             for n in range(cfg.TRAIN.num_gpu):
                 feed_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
-                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size,:]
+                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
 
             feed_dict[self.inputs[2]] = True
             _, total_loss_value, loss_value, top1_acc_value, top5_acc_value, l2_loss_value, learn_rate, = \
@@ -421,7 +394,7 @@ class trainner():
             feed_dict = {}
             for n in range(cfg.TRAIN.num_gpu):
                 feed_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
-                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :]
+                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
             feed_dict[self.inputs[2]] = False
             total_loss_value, loss_value, top1_acc_value, top5_acc_value, l2_loss_value, learn_rate = \
                 self._sess.run([*self.val_outputs],

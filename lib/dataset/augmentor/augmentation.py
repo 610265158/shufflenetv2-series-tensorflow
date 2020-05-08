@@ -366,7 +366,7 @@ def Mirror(src,label=None,symmetry=None):
 
     img = cv2.flip(src, 1)
     if label is None:
-        return img
+        return img,None
 
     width=img.shape[1]
     cod = []

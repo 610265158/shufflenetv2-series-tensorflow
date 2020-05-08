@@ -10,7 +10,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 config.TRAIN = edict()
 #### below are params for dataiter
 config.TRAIN.process_num = 5
-config.TRAIN.prefetch_size = 100
+config.TRAIN.prefetch_size = 50
 ############
 
 
@@ -19,14 +19,14 @@ config.TRAIN.batch_size = 128
 config.TRAIN.save_interval = 5000               ##no use, we save the model evry epoch
 config.TRAIN.log_interval = 10                  ##10 iters for a log msg
 config.TRAIN.epoch = 2000                       #### no actual meaning, just keep training,
-config.TRAIN.train_set_size=972930              ###########u need be sure
-config.TRAIN.val_set_size=107115                ###50562
+config.TRAIN.train_set_size=1281167              ###########u need be sure
+config.TRAIN.val_set_size=50000                ###50562
 
 config.TRAIN.iter_num_per_epoch = config.TRAIN.train_set_size // config.TRAIN.num_gpu // config.TRAIN.batch_size
 config.TRAIN.val_iter=config.TRAIN.val_set_size// config.TRAIN.num_gpu // config.TRAIN.batch_size
 
-config.TRAIN.lr_value_every_step = [0.001,0.0001,0.00001,0.000001]          ####lr policy
-config.TRAIN.lr_decay_every_step = [150000,250000,300000]
+config.TRAIN.lr_value_every_step = [0.00001,0.0001,0.001,0.0001,0.00001,0.000001]          ####lr policy
+config.TRAIN.lr_decay_every_step = [500,1000,500000,700000,900000]
 config.TRAIN.weight_decay_factor = 1.e-5                                    ####l2
 config.TRAIN.train_val_ratio= 0.9                                           ### nouse
 config.TRAIN.vis=False                                                      #### if to check the training data
@@ -38,7 +38,7 @@ config.MODEL.continue_train=False                                           ##re
 config.MODEL.model_path = './model/'                                        ## save directory
 config.MODEL.hin = 224                                                      # input size during training , 128,160,   depends on
 config.MODEL.win = 224
-config.MODEL.out_channel=1000    # output vector    68 points , 3 headpose ,4 cls params,(left eye, right eye, mouth, big mouth open)
+config.MODEL.cls=1000
 
 config.MODEL.net_structure='ShuffleNetV2'
 config.MODEL.pretrained_model=None
@@ -54,14 +54,5 @@ config.DATA.PIXEL_MEAN = [123., 116., 103.]             ###rgb
 config.DATA.PIXEL_STD = [58., 57., 57.]                 ### no use, just sub mean
 
 
-config.DATA.weights = np.array(weights_xy,dtype=np.float32).reshape([-1])
 
-
-
-
-
-config.MODEL.pruning=False               ## pruning flag  add l1 reg to bn/beta, no use for tmp
-config.MODEL.pruning_bn_reg=0.00005
-
-
-
+config.MODEL.deployee=False

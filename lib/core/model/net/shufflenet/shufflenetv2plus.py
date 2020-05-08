@@ -335,7 +335,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
                                     num_outputs=1280,
                                     kernel_size=[1, 1],
                                     stride=1,
-                                    activation_fn=hard_swish(),
+                                    activation_fn=hard_swish,
                                     normalizer_fn=slim.batch_norm,
                                     scope='conv_last')
 
@@ -347,21 +347,23 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
                                     num_outputs=1280,
                                     kernel_size=[1, 1],
                                     stride=1,
-                                    activation_fn=hard_swish(),
+                                    activation_fn=hard_swish,
                                     normalizer_fn=slim.batch_norm,
                                     scope='fc')
 
-                    x=slim.dropout(x,0.2)
+                    x=slim.dropout(x,0.5)
 
                     x=slim.conv2d(x,
-                                    num_outputs=1000,
+                                    num_outputs=cfg.MODEL.cls,
                                     kernel_size=[1, 1],
                                     stride=1,
                                     activation_fn=None,
                                     normalizer_fn=None,
                                     scope='cls')
 
-
+        x=tf.squeeze(x, axis=1)
+        x = tf.squeeze(x, axis=1)
+        x=tf.identity(x,name='cls_output')
     return x
 
 

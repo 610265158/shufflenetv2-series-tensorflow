@@ -69,7 +69,8 @@ class DataIter():
         self.batch_size = cfg.TRAIN.batch_size
         self.process_num = cfg.TRAIN.process_num
         self.prefetch_size = cfg.TRAIN.prefetch_size
-
+        if not training_flag:
+            self.process_num=1
         self.generator = ImageNetDataIter(img_root_path, ann_file, self.training_flag)
 
         self.ds=self.build_iter()
@@ -158,26 +159,38 @@ class ImageNetDataIter():
 
         if is_training:
             if random.uniform(0, 1) > 0.5:
-                crop_image=Random_crop(image,0.2)
+                image=Random_crop(image,0.2)
             if random.uniform(0, 1) > 0.5:
-                crop_image, _ = Mirror(crop_image, label=None, symmetry=cfg.DATA.symmetry)
+                image, _ = Mirror(image, label=None, symmetry=None)
             if random.uniform(0, 1) > 0.0:
                 angle = random.uniform(-30, 30)
-                crop_image, _ = Rotate_aug(crop_image, label=None, angle=angle)
+                image, _ = Rotate_aug(image, label=None, angle=angle)
 
             if random.uniform(0, 1) > 0.5:
                 strength = random.uniform(0, 50)
-                crop_image, _ = Affine_aug(crop_image, strength=strength, label=None)
+                image, _ = Affine_aug(image, strength=strength, label=None)
 
             if random.uniform(0, 1) > 0.5:
-                crop_image=self.color_augmentor(crop_image)
+                image=self.color_augmentor(image)
             if random.uniform(0, 1) > 0.5:
-                crop_image=pixel_jitter(crop_image,15)
+                image=pixel_jitter(image,15)
             if random.uniform(0, 1) > 0.5:
-                crop_image = Img_dropout(crop_image, 0.2)
+                image = Img_dropout(image, 0.2)
 
+
+            interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_NEAREST,
+                              cv2.INTER_LANCZOS4]
+            interp_method = random.choice(interp_methods)
+
+            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin), interpolation=interp_method)
+        else:
+
+            ###centercrop
+
+
+            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin))
         ###resize here
 
-        label = label.astype(np.float32)
-
-        return crop_image, label
+        label = label.astype(np.int64)
+        image= image.astype(np.uint8)
+        return image, label
