@@ -110,7 +110,7 @@ class trainner():
 
 
         if 'Plus' in cfg.MODEL.net_structure:
-            net = ShufflenetV2Plus()
+            net = ShufflenetV2Plus
         else:
             net = ShufflenetV2
 

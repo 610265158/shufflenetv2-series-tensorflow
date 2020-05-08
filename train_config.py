@@ -15,7 +15,7 @@ config.TRAIN.prefetch_size = 50
 
 
 config.TRAIN.num_gpu = 1
-config.TRAIN.batch_size = 128
+config.TRAIN.batch_size = 96
 config.TRAIN.save_interval = 5000               ##no use, we save the model evry epoch
 config.TRAIN.log_interval = 10                  ##10 iters for a log msg
 config.TRAIN.epoch = 300                       #### no actual meaning, just keep training,
@@ -25,13 +25,13 @@ config.TRAIN.val_set_size=50000                ###50562
 config.TRAIN.iter_num_per_epoch = config.TRAIN.train_set_size // config.TRAIN.num_gpu // config.TRAIN.batch_size
 config.TRAIN.val_iter=config.TRAIN.val_set_size// config.TRAIN.num_gpu // config.TRAIN.batch_size
 
-config.TRAIN.lr_value_every_step = [0.00001,0.0001,0.001,0.0001,0.00001,0.000001]          ####lr policy
-config.TRAIN.lr_decay_every_step = [500,1000,600000,800000,1000000]
+config.TRAIN.lr_value_every_step = [0.001,0.01,0.05,0.005,0.0005,0.00005]          ####lr policy
+config.TRAIN.lr_decay_every_step = [300,500,600000,800000,1000000]
 config.TRAIN.weight_decay_factor = 4.e-5                                    ####l2
 config.TRAIN.train_val_ratio= 0.9                                           ### nouse
 config.TRAIN.vis=False                                                      #### if to check the training data
 config.TRAIN.mix_precision=False                                            ##use mix precision to speedup, tf1.14 at least
-config.TRAIN.opt='Adam'                                                     ##Adam or SGD， sgd is more stable for resnet
+config.TRAIN.opt='sgd'                                                     ##Adam or SGD， sgd is more stable for resnet
 
 config.MODEL = edict()
 config.MODEL.continue_train=False                                           ##recover from a model completly
