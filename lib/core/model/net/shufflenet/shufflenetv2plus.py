@@ -54,7 +54,13 @@ def shuffle(z):
         return x, y
 
 def shufflenet(old_x,inp, oup, base_mid_channels, ksize, stride, activation, useSE):
-    x_proj, x = shuffle(old_x)
+
+    if stride==1:
+        x_proj, x = shuffle(old_x)
+    else:
+        x_proj = old_x
+        x = old_x
+
     base_mid_channel = base_mid_channels
 
     outputs = oup - inp
@@ -89,6 +95,7 @@ def shufflenet(old_x,inp, oup, base_mid_channels, ksize, stride, activation, use
                     activation_fn=act_func,
                     normalizer_fn=slim.batch_norm,
                     scope='conv1x1_pw')
+
     if useSE and activation != 'ReLU':
         x=se(x,outputs)
 
@@ -115,7 +122,11 @@ def shufflenet(old_x,inp, oup, base_mid_channels, ksize, stride, activation, use
     return res
 
 def shufflenet_xception(old_x,inp, oup, base_mid_channels, stride, activation, useSE):
-    x_proj, x = shuffle(old_x)
+    if stride == 1:
+        x_proj, x = shuffle(old_x)
+    else:
+        x_proj = old_x
+        x = old_x
 
     base_mid_channel = base_mid_channels
     outputs = oup - inp
@@ -193,8 +204,6 @@ def shufflenet_xception(old_x,inp, oup, base_mid_channels, stride, activation, u
                   activation_fn=act_func,
                   normalizer_fn=slim.batch_norm,
                   scope='conv1x1_pw_proj')
-
-
 
     res=tf.concat([x_proj,x],axis=3)
 

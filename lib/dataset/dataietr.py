@@ -158,7 +158,7 @@ class ImageNetDataIter():
 
             if random.uniform(0, 1) > 0.5:
                 image, _ = Mirror(image, label=None, symmetry=None)
-            if random.uniform(0, 1) > 0.0:
+            if random.uniform(0, 1) > 0.5:
                 angle = random.uniform(-15, 15)
                 image, _ = Rotate_aug(image, label=None, angle=angle)
 
