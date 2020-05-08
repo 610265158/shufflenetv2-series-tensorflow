@@ -289,7 +289,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
     fms=[]
     arg_scope = shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor)
     with slim.arg_scope(arg_scope):
-        with slim.arg_scope([slim.batch_norm], is_training=is_training):
+        with slim.arg_scope([slim.batch_norm,slim.dropout], is_training=is_training):
             with tf.variable_scope('ShuffleNetV2_Plus'):
                 input_channel = stage_out_channels[1]
 
