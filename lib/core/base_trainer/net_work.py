@@ -40,6 +40,9 @@ class trainner():
 
         self.metric=Metric(cfg.TRAIN.batch_size)
 
+
+
+        self.train_dict={}
     def get_opt(self):
 
         with self._graph.as_default():
@@ -345,15 +348,15 @@ class trainner():
 
             fetch_duration = time.time() - start_time
 
-            feed_dict = {}
-            for n in range(cfg.TRAIN.num_gpu):
-                feed_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
-                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
 
-            feed_dict[self.inputs[2]] = True
+            for n in range(cfg.TRAIN.num_gpu):
+                self.train_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
+                self.train_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
+
+            self.train_dict[self.inputs[2]] = True
             _, total_loss_value, loss_value, top1_acc_value, top5_acc_value, l2_loss_value, learn_rate, = \
                 self._sess.run([*self.outputs],
-                         feed_dict=feed_dict)
+                         feed_dict=self.train_dict)
 
 
 
@@ -387,9 +390,9 @@ class trainner():
                                           fetch_duration,
                                           run_duration))
 
-            if self.ite_num % 100 == 0:
-                summary_str = self._sess.run(self.summary_op, feed_dict=feed_dict)
-                self.summary_writer.add_summary(summary_str, self.ite_num)
+            # if self.ite_num % 100 == 0:
+            #     summary_str = self._sess.run(self.summary_op, feed_dict=self.train_dict)
+            #     self.summary_writer.add_summary(summary_str, self.ite_num)
 
     def _val(self,_epoch):
 
