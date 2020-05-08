@@ -158,20 +158,20 @@ class ImageNetDataIter():
 
             if random.uniform(0, 1) > 0.5:
                 image, _ = Mirror(image, label=None, symmetry=None)
-            if random.uniform(0, 1) > 0.5:
-                angle = random.uniform(-15, 15)
-                image, _ = Rotate_aug(image, label=None, angle=angle)
+            # if random.uniform(0, 1) > 0.5:
+            #     angle = random.uniform(-15, 15)
+            #     image, _ = Rotate_aug(image, label=None, angle=angle)
 
-            if random.uniform(0, 1) > 1.:
-                strength = random.uniform(0, 50)
-                image, _ = Affine_aug(image, strength=strength, label=None)
+            # if random.uniform(0, 1) > 1.:
+            #     strength = random.uniform(0, 50)
+            #     image, _ = Affine_aug(image, strength=strength, label=None)
 
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
-            if random.uniform(0, 1) > 1.0:
-                image=pixel_jitter(image,15)
-            if random.uniform(0, 1) > 0.5:
-                image = Img_dropout(image, 0.2)
+            # if random.uniform(0, 1) > 1.0:
+            #     image=pixel_jitter(image,15)
+            # if random.uniform(0, 1) > 0.5:
+            #     image = Img_dropout(image, 0.2)
 
         else:
             ###centercrop

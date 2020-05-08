@@ -12,7 +12,7 @@ from train_config import config as cfg
 from lib.dataset.dataietr import DataIter
 
 from lib.core.model.net.shufflenet.shufflenetv2plus import ShufflenetV2Plus
-
+from lib.core.model.net.shufflenet.shufflenetv2 import ShufflenetV2
 from lib.helper.logger import logger
 
 from lib.core.base_trainer.metric import Metric
@@ -108,7 +108,13 @@ class trainner():
         # Build the portion of the Graph calculating the losses. Note that we will
         # assemble the total_loss using a custom function below.
 
-        logits = ShufflenetV2Plus(images,training,include_head=True)
+
+        if 'Plus' in cfg.MODEL.net_structure:
+            net = ShufflenetV2Plus()
+        else:
+            net = ShufflenetV2
+
+        logits = net(images,training,include_head=True)
 
         onehot_labels=tf.one_hot(labels,depth=cfg.MODEL.cls)
         cls_loss=slim.losses.softmax_cross_entropy(logits=logits,onehot_labels=onehot_labels,label_smoothing=0.1)

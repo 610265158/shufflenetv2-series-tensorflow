@@ -177,16 +177,7 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0',include_head=Fal
                     x=tf.reduce_mean(x,axis=[1,2],keep_dims=True)
 
 
-
-                    x = slim.conv2d(x,
-                                    num_outputs=1024,
-                                    kernel_size=[1, 1],
-                                    stride=1,
-                                    activation_fn=tf.nn.relu,
-                                    normalizer_fn=slim.batch_norm,
-                                    scope='fc')
-
-                    x=slim.dropout(x,0.8)
+                    #x=slim.dropout(x,0.8)
 
                     x=slim.conv2d(x,
                                     num_outputs=cfg.MODEL.cls,
@@ -196,9 +187,9 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0',include_head=Fal
                                     normalizer_fn=None,
                                     scope='cls')
 
-        x=tf.squeeze(x, axis=1)
         x = tf.squeeze(x, axis=1)
-        x=tf.identity(x,name='cls_output')
+        x = tf.squeeze(x, axis=1)
+        x = tf.identity(x,name='cls_output')
     return x
 
 

@@ -27,7 +27,7 @@ config.TRAIN.val_iter=config.TRAIN.val_set_size// config.TRAIN.num_gpu // config
 
 config.TRAIN.lr_value_every_step = [0.00001,0.0001,0.001,0.0001,0.00001,0.000001]          ####lr policy
 config.TRAIN.lr_decay_every_step = [500,1000,600000,800000,1000000]
-config.TRAIN.weight_decay_factor = 1.e-5                                    ####l2
+config.TRAIN.weight_decay_factor = 4.e-5                                    ####l2
 config.TRAIN.train_val_ratio= 0.9                                           ### nouse
 config.TRAIN.vis=False                                                      #### if to check the training data
 config.TRAIN.mix_precision=False                                            ##use mix precision to speedup, tf1.14 at least
@@ -51,7 +51,7 @@ config.DATA.val_txt_path='val.txt'
 ############NOW the model is trained with RGB mode
 
 config.DATA.PIXEL_MEAN = [123., 116., 103.]             ###rgb
-config.DATA.PIXEL_STD = [58., 57., 57.]                 ### no use, just  /255.
+config.DATA.PIXEL_STD = [58., 57., 57.]                 ### no norm is used
 
 
 
