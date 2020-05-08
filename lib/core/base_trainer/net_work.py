@@ -230,6 +230,8 @@ class trainner():
             # Add a summary to track the learning rate.
             self.add_summary(tf.summary.scalar('learning_rate', lr))
             self.add_summary(tf.summary.scalar('loss', cls_loss))
+            self.add_summary(tf.summary.scalar('acctop1', top1_accuracy))
+            self.add_summary(tf.summary.scalar('acctop5', top5_accuracy))
             self.add_summary(tf.summary.scalar('l2_loss', l2_loss))
 
             # Add histograms for gradients.

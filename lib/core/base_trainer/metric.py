@@ -1,6 +1,6 @@
 import numpy as np
 
-
+from lib.helper.logger import logger
 
 class Metric():
     def __init__(self,batch_size):
@@ -22,9 +22,12 @@ class Metric():
 
 
         ## report
-        print('top1 acc:%.6f\n'%(self.top1_correct/self.total))
-        print('top5 acc:%.6f\n' % (self.top5_correct / self.total))
-        print('%d samples\n'%self.total)
+        message=''
+        message+=('top1 acc:%.6f\n'%(self.top1_correct/self.total))
+        message+=('top5 acc:%.6f\n' % (self.top5_correct / self.total))
+        message+=('%d samples \n'%self.total)
+
+        logger.info(message)
         self.top1_correct = 0
         self.top5_correct = 0
         self.total = 0

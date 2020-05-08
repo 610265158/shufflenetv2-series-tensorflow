@@ -35,7 +35,7 @@ def shuffle(z):
     with tf.name_scope('shuffle_split'):
         shape = tf.shape(z)
         batch_size = shape[0]
-        height, width = shape[1], shape[2]
+        height, width = z.shape[1].value, z.shape[2].value
 
         depth = z.shape[3].value
 
@@ -243,7 +243,7 @@ def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
       weights_initializer=slim.variance_scaling_initializer(),
       biases_initializer=None,
       normalizer_fn=slim.batch_norm if use_batch_norm else None,
-      normalizer_params=batch_norm_params):
+      normalizer_params=batch_norm_params,):
     with slim.arg_scope([slim.batch_norm], **batch_norm_params):
       # The following implies padding='SAME' for pool1, which makes feature
       # alignment easier for dense prediction tasks. This is also used in
@@ -281,7 +281,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
     arg_scope = shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor)
     with slim.arg_scope(arg_scope):
         with slim.arg_scope([slim.batch_norm], is_training=is_training):
-            with tf.variable_scope('ShuffleNetV2Plus'):
+            with tf.variable_scope('ShuffleNetV2_Plus'):
                 input_channel = stage_out_channels[1]
 
                 net = slim.conv2d(inputs, 16, [3, 3],stride=2, activation_fn=hard_swish,
@@ -325,11 +325,12 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
                                 raise NotImplementedError
                             input_channel = output_channel
                     fms.append(net)
-
-
-
                 for item in fms:
                     print(item)
+
+                if not include_head:
+                    return fms
+
                 if include_head:
                     x = slim.conv2d(net,
                                     num_outputs=1280,

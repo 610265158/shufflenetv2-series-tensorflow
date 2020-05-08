@@ -19,8 +19,9 @@ from lib.dataset.augmentor.augmentation import Rotate_aug,\
                                         Mirror,\
                                         Padding_aug,\
                                         Img_dropout,\
-                                        Random_crop
-
+                                        RandomResizedCrop,\
+                                        OpencvResize,\
+                                        CenterCrop
 
 from lib.dataset.augmentor.visual_augmentation import ColorDistort,pixel_jitter
 from lib.dataset.headpose import get_head_pose
@@ -109,15 +110,12 @@ class ImageNetDataIter():
     def __init__(self, img_root_path='', ann_file=None, training_flag=True,shuffle=True):
 
 
-
-        self.eye_close_thres=0.02
-        self.mouth_close_thres = 0.02
-        self.big_mouth_open_thres = 0.08
         self.training_flag = training_flag
         self.shuffle = shuffle
 
         self.color_augmentor = ColorDistort()
-
+        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win))
+        self.center_crop=CenterCrop(target_size=224,resize_size=256)
 
         self.lst = self.parse_file(img_root_path, ann_file)
 
@@ -132,9 +130,6 @@ class ImageNetDataIter():
                 np.random.shuffle(idxs)
             for k in idxs:
                 yield self._map_func(self.lst[k], self.training_flag)
-
-
-
 
 
     def parse_file(self,im_root_path,ann_file):
@@ -158,38 +153,30 @@ class ImageNetDataIter():
         label = np.array(ann)
 
         if is_training:
-            if random.uniform(0, 1) > 0.5:
-                image=Random_crop(image,0.2)
+
+            image=self.random_crop_resize(image)
+
             if random.uniform(0, 1) > 0.5:
                 image, _ = Mirror(image, label=None, symmetry=None)
             if random.uniform(0, 1) > 0.0:
-                angle = random.uniform(-30, 30)
+                angle = random.uniform(-15, 15)
                 image, _ = Rotate_aug(image, label=None, angle=angle)
 
-            if random.uniform(0, 1) > 0.5:
+            if random.uniform(0, 1) > 1.:
                 strength = random.uniform(0, 50)
                 image, _ = Affine_aug(image, strength=strength, label=None)
 
             if random.uniform(0, 1) > 0.5:
                 image=self.color_augmentor(image)
-            if random.uniform(0, 1) > 0.5:
+            if random.uniform(0, 1) > 1.0:
                 image=pixel_jitter(image,15)
             if random.uniform(0, 1) > 0.5:
                 image = Img_dropout(image, 0.2)
 
-
-            interp_methods = [cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_NEAREST,
-                              cv2.INTER_LANCZOS4]
-            interp_method = random.choice(interp_methods)
-
-            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin), interpolation=interp_method)
         else:
-
             ###centercrop
+            image = self.center_crop(image)
 
-
-            image = cv2.resize(image, (cfg.MODEL.win, cfg.MODEL.hin))
-        ###resize here
 
         label = label.astype(np.int64)
         image= image.astype(np.uint8)

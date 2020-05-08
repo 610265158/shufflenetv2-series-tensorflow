@@ -2,7 +2,7 @@
 
 import os
 
-data_set_dir='/media/lz/ssd_2/coco_data/IMAGENET'
+data_set_dir='./IMAGENET'
 train_dir=os.path.join(data_set_dir,'train')
 val_dir=os.path.join(data_set_dir,'val')
 
