@@ -42,7 +42,7 @@ config.MODEL.hin = 224                                                      # in
 config.MODEL.win = 224
 config.MODEL.cls=1000
 
-config.MODEL.net_structure='ShuffleNetV2'
+config.MODEL.net_structure='ShuffleNetV2_Plus'
 config.MODEL.pretrained_model=None
 
 config.DATA = edict()
