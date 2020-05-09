@@ -152,11 +152,18 @@ def ShufflenetV2(inputs,is_training=True,depth_multiplier='1.0',include_head=Fal
         with slim.arg_scope([slim.batch_norm], is_training=is_training):
             with tf.variable_scope('ShuffleNetV2'):
 
-                net = slim.conv2d(inputs, 24, [3, 3],stride=2, activation_fn=tf.nn.relu,
+                net = slim.conv2d(inputs, 16, [3, 3],stride=2, activation_fn=tf.nn.relu,
                                   normalizer_fn=slim.batch_norm, scope='init_conv')
 
-                net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='SAME')
-
+                #net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='SAME')
+                net = slim.separable_conv2d(net,
+                                            num_outputs=24,
+                                            kernel_size=[3, 3],
+                                            stride=2,
+                                            activation_fn=tf.nn.relu,
+                                            normalizer_fn=slim.batch_norm,
+                                            scope='init_conv2',
+                                            depth_multiplier=1)
                 block1 = block(net, num_units=4, out_channels=initial_depth, scope='Stage2')
 
                 block2 = block(block1, num_units=8, out_channels=initial_depth*2, scope='Stage3')
