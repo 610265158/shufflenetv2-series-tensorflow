@@ -55,7 +55,7 @@ class trainner():
 
             if cfg.TRAIN.lr_decay == 'cos':
                 lr = tf.train.cosine_decay(
-                    learning_rate=0.025, global_step=global_step, decay_steps=cfg.TRAIN.lr_decay_every_step[-1])
+                    learning_rate=0.001, global_step=global_step, decay_steps=cfg.TRAIN.lr_decay_every_step[-1])
             else:
                 lr = tf.train.piecewise_constant(global_step,
                                                  cfg.TRAIN.lr_decay_every_step,
@@ -282,7 +282,11 @@ class trainner():
             tf_config = tf.ConfigProto(
                 allow_soft_placement=True,
                 log_device_placement=False)
-            tf_config.gpu_options.allow_growth = True
+            #tf_config.gpu_options.allow_growth = True
+            tf_config.graph_options.optimizer_options.global_jit_level = tf.OptimizerOptions.ON_1
+
+            tf_config.intra_op_parallelism_threads = 18
+
             self._sess = tf.Session(config=tf_config)
             self._sess.run(init)
 
