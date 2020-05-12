@@ -53,6 +53,7 @@ config.DATA = edict()
 config.DATA.root_path=''
 config.DATA.train_txt_path='train.txt'
 config.DATA.val_txt_path='val.txt'
+config.DATA.rgb=True
 ############ the model is trained with BGR mode
 
 

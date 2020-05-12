@@ -2,7 +2,7 @@
 
 import os
 
-data_set_dir='./test_data'
+data_set_dir='./IMAGENET'
 train_dir=data_set_dir
 val_dir=data_set_dir
 

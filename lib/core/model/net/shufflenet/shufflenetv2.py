@@ -253,41 +253,44 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
     with slim.arg_scope(arg_scope):
         with slim.arg_scope([slim.batch_norm, slim.dropout], is_training=is_training):
             with tf.variable_scope('ShuffleNetV2'):
-
+                input_channel = stage_out_channels[1]
                 net = slim.conv2d(inputs, 24, [3, 3],stride=2, activation_fn=tf.nn.relu,
-                                  normalizer_fn=slim.batch_norm, scope='init_conv')
+                                  normalizer_fn=slim.batch_norm, scope='first_conv/0')
 
                 net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='SAME')
 
                 fms = []
+
+                feature_cnt=0
                 for idxstage in range(len(stage_repeats)):
                     numrepeat = stage_repeats[idxstage]
                     output_channel = stage_out_channels[idxstage + 2]
 
                     for i in range(numrepeat):
-                        if i == 0:
-                            features=ShuffleV2Block(input_channel, output_channel,
-                                                                mid_channels=output_channel // 2, ksize=3, stride=2)
-                        else:
-                            features=ShuffleV2Block(input_channel // 2, output_channel,
-                                                                mid_channels=output_channel // 2, ksize=3, stride=1)
+                        with tf.variable_scope('features/%d' % (feature_cnt)):
+                            if i == 0:
+                                net=ShuffleV2Block(net,input_channel, output_channel,
+                                                                    base_mid_channels=output_channel // 2, ksize=3, stride=2,scope_index=feature_cnt)
+                            else:
+                                net=ShuffleV2Block(net,input_channel // 2, output_channel,
+                                                                    base_mid_channels=output_channel // 2, ksize=3, stride=1,scope_index=feature_cnt)
 
                         input_channel = output_channel
-
-                    fms.append(features)
+                        feature_cnt+=1
+                    fms.append(net)
 
                 if not include_head:
                     return fms
 
 
                 if include_head:
-                    x = slim.conv2d(features,
+                    x = slim.conv2d(net,
                                     num_outputs=1024,
                                     kernel_size=[1, 1],
                                     stride=1,
                                     activation_fn=tf.nn.relu,
                                     normalizer_fn=slim.batch_norm,
-                                    scope='conv_last')
+                                    scope='conv_last/0')
 
                     x=tf.reduce_mean(x,axis=[1,2],keep_dims=True)
 
@@ -300,7 +303,7 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
                                     stride=1,
                                     activation_fn=None,
                                     normalizer_fn=None,
-                                    scope='classifier')
+                                    scope='classifier/0')
 
         x = tf.squeeze(x, axis=1)
         x = tf.squeeze(x, axis=1)
