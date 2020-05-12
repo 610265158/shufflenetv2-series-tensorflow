@@ -96,6 +96,19 @@ for k,v in params_dict.items():
         moving_mean_tf = repalce(moving_mean_tf, 'module', 'ShuffleNetV2_Plus')
         moving_var_name_tf = repalce(moving_var_name_tf, 'module', 'ShuffleNetV2_Plus')
         try:
+
+
+
+            '''
+            pytorch weights is  [out,in,ksize[0],ksize[1]]
+            tensorflow weights is [ksize[0],ksize[1],in,out]
+            
+            
+            if depthwise:
+            ??
+            
+            
+            '''
             if 'depthwise_weights' in weights_name_tf:
                 params_dict_tf[weights_name_tf] = np.array(params_dict[weights_name_torch]).transpose(2, 3, 0, 1)
             else:
