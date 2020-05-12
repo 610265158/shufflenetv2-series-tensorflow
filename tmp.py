@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-params=torch.load('ShuffleNetV2+.Small.pth.tar',map_location=torch.device('cpu') )
+params=torch.load('ShuffleNetV2+.Small.pth.tar', map_location=torch.device('cpu'))
 
 
 params_dict=params['state_dict']
@@ -37,10 +37,10 @@ for k,v in params_dict.items():
 
     new_k=k
 
-    if 'features.14.branch_main.2' in k:
-        print(k,v.shape)
 
-
+    if 'first' in k:
+        print(params_dict[k].shape)
+        print(params_dict[k])
 
 
     ### process conv
@@ -151,7 +151,10 @@ for k,v in params_dict.items():
 
 
 for k,v in params_dict_tf.items():
-    print(k,v.shape)
+    if 'first' in k:
+
+        print(v)
+        print(k,v.shape)
 
 
 np.save('shufflenetv2plus.npy',params_dict_tf)
@@ -160,5 +163,5 @@ np.save('shufflenetv2plus.npy',params_dict_tf)
 
 cheker=np.load('shufflenetv2plus.npy',allow_pickle=True).item()
 
-for k,v in cheker.items():
-    print(k,v.shape)
+# for k,v in cheker.items():
+#     print(k,v.shape)

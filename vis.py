@@ -14,16 +14,28 @@ val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,False)
 face=Shufflenet('./model/shufflenet.pb')
 
 
-for one_ele,_, in val_ds:
-    if _==35:
-        img_show=np.array(one_ele)
-        res=face.run(one_ele)
-        #print(res)
-        res=np.array(res)
+#
+# for one_ele,_, in val_ds:
+#     if 1:
+#         img_show=np.array(one_ele)
+#         res=face.run(one_ele)
+#         #print(res)
+#         res=np.array(res)
+#
+#
+#         img_show=img_show.astype(np.uint8)[0]
+#
+#
+#         cv2.imshow('tmp',img_show)
+#         cv2.waitKey(0)
 
 
-        img_show=img_show.astype(np.uint8)[0]
 
+img=cv2.imread('test.jpg')
+img=cv2.resize(img,(224,224))
+img=np.expand_dims(img,0)
 
-        cv2.imshow('tmp',img_show)
-        cv2.waitKey(0)
+img=np.array(img,dtype=np.float32)
+
+res=face.run(img)
+#         #print(res)

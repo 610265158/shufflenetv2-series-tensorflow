@@ -261,7 +261,7 @@ def Fill_img(img_raw,target_height,target_width,label=None):
 class RandomResizedCrop(object):
 
 
-    ### torch codes
+    ### torch_convert codes
 
     """Crop the given PIL Image to random size and aspect ratio.
 

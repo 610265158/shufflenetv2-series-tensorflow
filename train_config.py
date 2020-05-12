@@ -15,7 +15,7 @@ config.TRAIN.prefetch_size = 50
 
 
 config.TRAIN.num_gpu = 1
-config.TRAIN.batch_size = 128
+config.TRAIN.batch_size = 32
 config.TRAIN.save_interval = 5000               ##no use, we save the model evry epoch
 config.TRAIN.log_interval = 10                  ##10 iters for a log msg
 config.TRAIN.epoch = 300                       #### no actual meaning, just keep training,
@@ -31,7 +31,8 @@ config.TRAIN.lr_decay='cos'
 
 config.TRAIN.weight_decay_factor = 4.e-5                                    ####l2
 config.TRAIN.train_val_ratio= 0.9                                           ### nouse
-config.TRAIN.vis=False                                                      #### if to check the training data
+config.TRAIN.vis=True
+#### if to check the training data
 config.TRAIN.mix_precision=True                                            ##use mix precision to speedup, tf1.14 at least
 config.TRAIN.opt='Adam'                                                     ##Adam or SGD， sgd is more stable for resnet
 

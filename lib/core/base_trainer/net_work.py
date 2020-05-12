@@ -90,15 +90,21 @@ class trainner():
 
                 #########################restore the params
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
-                print(variables_restore)
 
-                for variables in variables_restore:
 
-                    logger.info('assign %s with np data'%(variables.name), )
-                    try:
-                        tf.assign(variables, params_dict[variables.name])
-                    except:
-                        break
+                for i,variables in enumerate(variables_restore):
+
+                    logger.info('assign %s with np data'%(variables.name) )
+
+
+                    print(variables)
+
+                    self._sess.run(variables.assign( params_dict[variables.name]))
+
+
+
+                    #var=self._sess.run(variables)
+                    #print(var)
 
             elif cfg.MODEL.pretrained_model is not None :
                 #########################restore the params
@@ -221,7 +227,7 @@ class trainner():
             tower_grads = []
             with tf.variable_scope(tf.get_variable_scope()):
                 for i in range(cfg.TRAIN.num_gpu):
-                    with tf.device('/gpu:%d' % i):
+                    with tf.device('/cpu:%d' % i):
                         with tf.name_scope('tower_%d' % (i)) as scope:
                             with slim.arg_scope([slim.model_variable, slim.variable], device='/cpu:0'):
                                 images_ = tf.placeholder(tf.float32, [None, cfg.MODEL.hin, cfg.MODEL.win, 3],

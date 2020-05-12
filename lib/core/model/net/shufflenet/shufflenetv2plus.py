@@ -34,12 +34,34 @@ def se(fm,input_dim,scope='really_boring'):
 
 
 def shuffle(z):
+    # with tf.name_scope('shuffle_split'):
+    #     shape = tf.shape(z)
+    #     batch_size = shape[0]
+    #     height, width = z.shape[1].value, z.shape[2].value
+    #
+    #     depth = z.shape[3].value
+    #
+    #     if cfg.MODEL.deployee:
+    #         z = tf.reshape(z, [ height, width, 2, depth//2])  # shape [batch_size, height, width, 2, depth]
+    #
+    #         z = tf.transpose(z, [0, 1, 3, 2])
+    #
+    #     else:
+    #         z = tf.reshape(z, [batch_size, height, width, 2, depth//2])# shape [batch_size, height, width, 2, depth]
+    #
+    #         z = tf.transpose(z, [0, 1, 2, 4, 3])
+    #
+    #     z = tf.reshape(z, [batch_size, height, width, depth])
+    #     x, y = tf.split(z, num_or_size_splits=2, axis=3)
+    #     return x, y
     with tf.name_scope('shuffle_split'):
+        z=tf.transpose(z,perm=[0,3,1,2])
+
         shape = tf.shape(z)
         batch_size = shape[0]
-        height, width = z.shape[1].value, z.shape[2].value
+        height, width = z.shape[2].value, z.shape[3].value
 
-        depth = z.shape[3].value
+        depth = z.shape[1].value
 
         if cfg.MODEL.deployee:
             z = tf.reshape(z, [ height, width, 2, depth//2])  # shape [batch_size, height, width, 2, depth]
@@ -47,14 +69,18 @@ def shuffle(z):
             z = tf.transpose(z, [0, 1, 3, 2])
 
         else:
-            z = tf.reshape(z, [batch_size, height, width, 2, depth//2])# shape [batch_size, height, width, 2, depth]
+            z = tf.reshape(z, [batch_size*depth//2,2, height* width])# shape [batch_size, height, width, 2, depth]
 
-            z = tf.transpose(z, [0, 1, 2, 4, 3])
+            z = tf.transpose(z, [1,0,2])
+            z = tf.reshape(z, [2,-1, depth // 2, height , width])
 
-        z = tf.reshape(z, [batch_size, height, width, depth])
-        x, y = tf.split(z, num_or_size_splits=2, axis=3)
+        x, y = tf.split(z, num_or_size_splits=2, axis=0)
+
+
+        x=tf.transpose(x[0],perm=[0,2,3,1])
+        y = tf.transpose(y[0], perm=[0, 2, 3, 1])
+
         return x, y
-
 def shufflenet(old_x,inp, oup, base_mid_channels, ksize, stride, activation, useSE,scope_index=0):
 
 
@@ -367,7 +393,7 @@ def shufflenet_xception(old_x,inp, oup, base_mid_channels, stride, activation, u
 
 
 def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
-                     batch_norm_decay=0.97,
+                     batch_norm_decay=0.9,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
@@ -449,7 +475,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
 
                 net = slim.conv2d(inputs, 16, [3, 3],stride=2, activation_fn=hard_swish,
                                   normalizer_fn=slim.batch_norm, scope='first_conv/0')
-
+                net = tf.identity(net, name='cls_output')
                 archIndex=0
 
                 feature_cnt=0
@@ -532,7 +558,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
 
         x=tf.squeeze(x, axis=1)
         x = tf.squeeze(x, axis=1)
-        x=tf.identity(x,name='cls_output')
+        #x=tf.identity(x,name='cls_output')
     return x
 
 
