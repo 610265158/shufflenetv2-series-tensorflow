@@ -475,7 +475,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
 
                 net = slim.conv2d(inputs, 16, [3, 3],stride=2, activation_fn=hard_swish,
                                   normalizer_fn=slim.batch_norm, scope='first_conv/0')
-                net = tf.identity(net, name='cls_output')
+
                 archIndex=0
 
                 feature_cnt=0
@@ -558,7 +558,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=Fal
 
         x=tf.squeeze(x, axis=1)
         x = tf.squeeze(x, axis=1)
-        #x=tf.identity(x,name='cls_output')
+        x=tf.identity(x,name='cls_output')
     return x
 
 

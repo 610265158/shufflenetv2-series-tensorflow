@@ -3,31 +3,12 @@ A simple face aligment method
 
 
 ## introduction
-A simple face aligment method based on tensorflow. 
-
-**CAUTION: this is the tensorflow1 branch, if you want to try tensorflow2, please switch to master branch**
-
-It is simple and flexible, trained with wingloss , multi task learning, also with data augmentation based on headpose and face attributes(eyes state and mouth state).
-
-[CN blog](https://blog.csdn.net/qq_35606924/article/details/99711208)
-
-And i suggest that you could try with another project,an algorithm including face detect and keypoints, and some optimizations were made. Check it there **[[pappa_pig_face_engine]](github.com/610265158/Peppa_Pig_Face_Engine).**
-
-Contact me if u have problem about it. 2120140200@mail.nankai.edu.cn :)
-
-demo pictures:
-
-![samples](https://github.com/610265158/face_landmark/blob/master/figures/tmp_screenshot_18.08.20192.png)
-
-![gifs](https://github.com/610265158/Peppa_Pig_Face_Engine/blob/master/figure/sample.gif)
-
-this gif is from github.com/610265158/Peppa_Pig_Face_Engine, but it is the same model : )
+A shufflenetv2 implementation based on  tensorflow. 
 
 pretrained model:
 
 + [baidu disk](https://pan.baidu.com/s/1jPW9cq9V9sJDrcrtcqpmLQ)  (code wd5g)
 + [google drive](https://drive.google.com/open?id=1YHtaLkalAqURbkIYYJBLf6HJZzd6vzOG)
-
 
 
 ## requirment
