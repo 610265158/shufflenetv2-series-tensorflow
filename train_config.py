@@ -43,7 +43,7 @@ config.MODEL.win = 224
 config.MODEL.cls=1000
 
 config.MODEL.net_structure='ShuffleNetV2_Plus'
-config.MODEL.pretrained_model=None
+config.MODEL.pretrained_model='shufflenetv2plus.npy'
 
 config.DATA = edict()
 

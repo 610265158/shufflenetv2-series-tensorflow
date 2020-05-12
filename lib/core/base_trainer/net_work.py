@@ -83,6 +83,23 @@ class trainner():
                 saver2 = tf.train.Saver(variables_restore)
                 saver2.restore(self._sess, cfg.MODEL.pretrained_model)
 
+            elif 'npy' in cfg.MODEL.pretrained_model:
+
+
+                params_dict=np.load(cfg.MODEL.pretrained_model,allow_pickle=True).item()
+
+                #########################restore the params
+                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
+                print(variables_restore)
+
+                for variables in variables_restore:
+
+                    logger.info('assign %s with np data'%(variables.name), )
+                    try:
+                        tf.assign(variables, params_dict[variables.name])
+                    except:
+                        break
+
             elif cfg.MODEL.pretrained_model is not None :
                 #########################restore the params
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
@@ -91,7 +108,11 @@ class trainner():
                 saver2 = tf.train.Saver(variables_restore)
                 saver2.restore(self._sess, cfg.MODEL.pretrained_model)
 
+
+
             else:
+                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
+                print(variables_restore)
                 logger.info('no pretrained model, train from sctrach')
                 # Build an initialization operation to run below.
 
@@ -305,6 +326,10 @@ class trainner():
         with self._graph.as_default():
             # Create a saver.
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=None)
+
+            tmp_model_name = cfg.MODEL.model_path + '/cls_for_convert.ckpt'
+            logger.info('A tmp model  saved as %s \n' % tmp_model_name)
+            self.saver.save(self._sess, save_path=tmp_model_name)
 
             # Build the summary operation from the last tower summaries.
             self.summary_op = tf.summary.merge(self.summaries)

@@ -13,10 +13,10 @@ input_checkpoint = checkpoint.model_checkpoint_path
 input_meta_graph = input_checkpoint + '.meta'
 
 ##output_node_names
-output_node_names='tower_0/images,tower_0/prediction,training_flag'
+output_node_names='tower_0/images,tower_0/cls_output,training_flag'
 
 #output_graph
-output_graph='./model/keypoints.pb'
+output_graph='./model/shufflenet.pb'
 
 
 print('excuted')
