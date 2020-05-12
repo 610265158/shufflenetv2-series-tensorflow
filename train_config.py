@@ -44,17 +44,16 @@ config.MODEL.win = 224
 config.MODEL.cls=1000
 
 config.MODEL.net_structure='ShuffleNetV2_Plus'
-config.MODEL.pretrained_model='shufflenetv2plus.npy'
+config.MODEL.pretrained_model='ShuffleNetV2+.Small.pth.tar.npy'                    ##according to your model,
+config.MODEL.size='Small'     ##Small Medium Large   for v2+
+                                ##0.5x, 1.0x 1.5x 2.0x   for v2
+
 
 config.DATA = edict()
-
 config.DATA.root_path=''
 config.DATA.train_txt_path='train.txt'
 config.DATA.val_txt_path='val.txt'
-############NOW the model is trained with RGB mode
-
-config.DATA.PIXEL_MEAN = [123., 116., 103.]             ###rgb
-config.DATA.PIXEL_STD = [58., 57., 57.]                 ### no norm is used
+############ the model is trained with BGR mode
 
 
 

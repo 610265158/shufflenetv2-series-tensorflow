@@ -1,7 +1,22 @@
 import torch
 import numpy as np
 
-params=torch.load('ShuffleNetV2+.Small.pth.tar', map_location=torch.device('cpu'))
+import argparse
+
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--input", required=False, default='ShuffleNetV2+.Small.pth.tar', help="pytorch model to convert")
+ap.add_argument("--output", required=False, default='ShuffleNetV2_Plus.npy', help="npy file to save the weights")
+ap.add_argument("--net_structure", required=False, default='ShuffleNetV2_Plus', help="the model structure")
+args = ap.parse_args()
+
+
+
+torch_model=args.input
+npy_model=args.input
+
+net_structure=args.net_structure
+params=torch.load(torch_model, map_location=torch.device('cpu'))
 
 
 params_dict=params['state_dict']
@@ -11,8 +26,6 @@ params_dict=params['state_dict']
 length=len(params_dict)
 
 dict={}
-
-
 
 def repalce(word,x,y):
 
@@ -36,11 +49,6 @@ cnt=0
 for k,v in params_dict.items():
 
     new_k=k
-
-
-    if 'first' in k:
-        print(params_dict[k].shape)
-        print(params_dict[k])
 
 
     ### process conv
@@ -90,11 +98,11 @@ for k,v in params_dict.items():
         moving_mean_tf = rename(moving_mean_tf, '.', '/')
         moving_var_name_tf = rename(moving_var_name_tf, '.', '/')
 
-        weights_name_tf = repalce(weights_name_tf, 'module', 'ShuffleNetV2_Plus')
-        gamma_name_tf = repalce(gamma_name_tf, 'module', 'ShuffleNetV2_Plus')
-        beta_name_tf = repalce(beta_name_tf, 'module', 'ShuffleNetV2_Plus')
-        moving_mean_tf = repalce(moving_mean_tf, 'module', 'ShuffleNetV2_Plus')
-        moving_var_name_tf = repalce(moving_var_name_tf, 'module', 'ShuffleNetV2_Plus')
+        weights_name_tf = repalce(weights_name_tf, 'module', net_structure)
+        gamma_name_tf = repalce(gamma_name_tf, 'module', net_structure)
+        beta_name_tf = repalce(beta_name_tf, 'module', net_structure)
+        moving_mean_tf = repalce(moving_mean_tf, 'module', net_structure)
+        moving_var_name_tf = repalce(moving_var_name_tf, 'module', net_structure)
         try:
 
 
@@ -144,10 +152,7 @@ for k,v in params_dict.items():
 
         weights_name_tf=rename(weights_name_tf,'.','/')
 
-        weights_name_tf = repalce(weights_name_tf, 'module', 'ShuffleNetV2_Plus')
-
-
-
+        weights_name_tf = repalce(weights_name_tf, 'module', net_structure)
         params_dict[weights_name_torch]=np.array(params_dict[weights_name_torch])
         params_dict[weights_name_torch]=np.expand_dims(params_dict[weights_name_torch],-1)
         params_dict[weights_name_torch] = np.expand_dims(params_dict[weights_name_torch], -1)
@@ -164,17 +169,13 @@ for k,v in params_dict.items():
 
 
 for k,v in params_dict_tf.items():
-    if 'first' in k:
-
-        print(v)
-        print(k,v.shape)
 
 
-np.save('shufflenetv2plus.npy',params_dict_tf)
+    print(v)
+    print(k,v.shape)
+
+
+np.save(npy_model,params_dict_tf)
 
 
 
-cheker=np.load('shufflenetv2plus.npy',allow_pickle=True).item()
-
-# for k,v in cheker.items():
-#     print(k,v.shape)

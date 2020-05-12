@@ -454,9 +454,7 @@ def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
 
 
 
-
-
-def ShufflenetV2Plus(inputs,is_training=True,model_size='Small',include_head=False):
+def ShufflenetV2Plus(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=False):
 
     architecture = [0, 0, 3, 1, 1, 1, 0, 0, 2, 0, 2, 1, 1, 0, 2, 0, 2, 1, 3, 2]
 

@@ -144,10 +144,12 @@ class trainner():
         # assemble the total_loss using a custom function below.
 
 
-        if 'Plus' in cfg.MODEL.net_structure:
+        if 'ShuffleNetV2_Plus' ==cfg.MODEL.net_structure:
             net = ShufflenetV2Plus
-        else:
+        elif 'ShuffleNetV2' ==cfg.MODEL.net_structure:
             net = ShufflenetV2
+        else:
+            raise NotImplementedError
 
         logits = net(images,training,include_head=True)
 

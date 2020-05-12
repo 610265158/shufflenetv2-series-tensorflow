@@ -148,7 +148,7 @@ class ImageNetDataIter():
         ####customed here
         fname, ann = dp
         image = cv2.imread(fname, cv2.IMREAD_COLOR)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         label = np.array(ann)
 
