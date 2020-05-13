@@ -36,11 +36,7 @@ class trainner():
 
         self.ema_weights = False
 
-
-
         self.metric=Metric(cfg.TRAIN.batch_size)
-
-
 
         self.train_dict={}
     def get_opt(self):

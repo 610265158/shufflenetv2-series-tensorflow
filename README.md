@@ -3,10 +3,6 @@
 ## introduction
 A shufflenetv2 implementation based on tensorflow. 
 
-pretrained model:
-
-+ [baidu disk](https://pan.baidu.com/s/1jPW9cq9V9sJDrcrtcqpmLQ)  (code wd5g)
-+ [google drive](https://drive.google.com/open?id=1YHtaLkalAqURbkIYYJBLf6HJZzd6vzOG)
 
 
 ## requirment
@@ -21,6 +17,11 @@ pretrained model:
 
 + python 3.6
 
+pretrained model:
+
++ [baidu disk](https://pan.baidu.com/s/1jPW9cq9V9sJDrcrtcqpmLQ)  (code wd5g)
++ [google drive](https://drive.google.com/open?id=1YHtaLkalAqURbkIYYJBLf6HJZzd6vzOG)
+
 
 ### performance
 
@@ -29,7 +30,7 @@ ShuffleNetV2+
 
 | model                  |top1 acc      |top5 acc|
 | :------:               |:------:      |:------:  |
-|  ShuffleNetV2+ Small   | 0.735        |0.912|
+|  ShuffleNetV2+ Small   | 0.735        |0.913|
 
 ShuffleNetV2
 

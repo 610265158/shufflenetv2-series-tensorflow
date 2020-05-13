@@ -9,7 +9,7 @@ import cv2
 from train_config import config as cfg
 cfg.TRAIN.batch_size=1
 
-val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,False)
+#val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,False)
 
 face=Shufflenet('./model/shufflenet.pb')
 
@@ -38,4 +38,6 @@ img=np.expand_dims(img,0)
 img=np.array(img,dtype=np.float32)
 
 res=face.run(img)
+
+print(np.argmax(res))
 #         #print(res)
