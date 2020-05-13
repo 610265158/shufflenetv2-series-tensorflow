@@ -224,7 +224,7 @@ def Img_dropout(src,max_pattern_ratio=0.05):
     width_end=int(width_start+block_width)
     height_start=int(random.uniform(0,height-block_height))
     height_end=int(height_start+block_height)
-    src[height_start:height_end,width_start:width_end,:]=np.array(cfg.DATA.PIXEL_MEAN,dtype=src.dtype)
+    src[height_start:height_end,width_start:width_end,:]=0.
 
     return src
 
