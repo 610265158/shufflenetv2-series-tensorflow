@@ -32,7 +32,7 @@ def Rotate_aug(src,angle,label=None,center=None,scale=1.0):
             image[:,:,i] = cv2.warpAffine(image[:,:,i], M, (w, h),
                                           flags=cv2.INTER_CUBIC,
                                           borderMode=cv2.BORDER_CONSTANT,
-                                          borderValue=cfg.DATA.PIXEL_MEAN)
+                                          borderValue=0.)
         return image,None
     else:
         label=label.T
