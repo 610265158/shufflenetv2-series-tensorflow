@@ -1,9 +1,7 @@
-# face_landmark
-A simple face aligment method
-
+# shufflenetv2
 
 ## introduction
-A shufflenetv2 implementation based on  tensorflow. 
+A shufflenetv2 implementation based on tensorflow. 
 
 pretrained model:
 
@@ -24,18 +22,36 @@ pretrained model:
 + python 3.6
 
 
+### performance
+
+then trained tensorflow 
+ShuffleNetV2+
+
+| model                  |top1 acc      |top5 acc|
+| :------:               |:------:      |:------:  |
+|  ShuffleNetV2+ Small   | 0.735        |0.912|
+
+ShuffleNetV2
+
+| model                    |top1 acc      |top5 acc|
+| :------:                 |:------:      |:------:  |
+|  ShuffleNetV2 0.5x	   | 0.601        |0.82|
+
 ## useage
 
 ### train
 
-1. download imagenet 
+1. download imagenet
 
-2. run ` python prepare_imagenet.py` produce train.txt and val.txt
+2. use this scripts to prepare val set  [https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh](https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh), 
+then run ` python prepare_imagenet.py` produce train.txt and val.txt
 (if u like train u own data, u should prepare the data like this:
 `path.jpg|label` 
+
+
 3. download pretrained model from official repo
 
-4. convert model and modify config
+4. convert pytorch model and modify config
 
     ```
     example  ShuffleNetV2+.Small
@@ -65,7 +81,19 @@ pretrained model:
         config.MODEL.size='0.5x'     ##Small Medium Large   for v2+
                                       ##0.5x, 1.0x 1.5x 2.0x   for v2
     ```
-   
-                              `
+    
+    
+**ps, the model precision is not keeped after convert, 
+and i thought, it is because the label order and some difference between pytorch and tensorflow,
+but it is fine after finetune the model with about 150,000 iters**
+                              
 
-4. then, run:  `python train.py`
+5. then, run:  `python train.py`
+
+
+### evaluation
+
+1. better convert the model to pb first by run `python tools/auto_freeze.py`,
+ it reads from the last checkpint
+ 
+2. `python eval.py --model shufflenet.pb`

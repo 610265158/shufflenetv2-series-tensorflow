@@ -1,6 +1,6 @@
 from lib.dataset.dataietr import DataIter
 from train_config import config
-from lib.core.api.keypoint import Shufflenet
+from lib.core.api.classifier import Shufflenet
 import numpy as np
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
