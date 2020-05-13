@@ -33,6 +33,39 @@ pretrained model:
 2. run ` python prepare_imagenet.py` produce train.txt and val.txt
 (if u like train u own data, u should prepare the data like this:
 `path.jpg|label` 
-3. download pretrained model
+3. download pretrained model from official repo
+
+4. convert model and modify config
+
+    ```
+    example  ShuffleNetV2+.Small
+    
+    4.1 run`python convert.py --input ShuffleNetV2+.Small.pth.tar 
+                              --output ShuffleNetV2+.Small
+                              --net_structure ShuffleNetV2_Plus
+                              
+    4.2 modify config as:
+        config.MODEL.net_structure='ShuffleNetV2_Plus'
+        config.MODEL.pretrained_model='ShuffleNetV2+.Small.npy'                    ##according to your model,
+        config.MODEL.size='Small'     ##Small Medium Large   for v2+
+                                      ##0.5x, 1.0x 1.5x 2.0x   for v2
+                                      
+       
+    
+    
+    example  ShuffleNetV2.0.5x
+    
+    4.1 run python convert.py --input ShuffleNetV2.0.5x.pth.tar 
+                              --output ShuffleNetV2.0.5x
+                              --net_structure ShuffleNetV2
+                              
+    4.2 modify config as:
+        config.MODEL.net_structure='ShuffleNetV2'
+        config.MODEL.pretrained_model='ShuffleNetV2.0.5x.npy'                    ##according to your model,
+        config.MODEL.size='0.5x'     ##Small Medium Large   for v2+
+                                      ##0.5x, 1.0x 1.5x 2.0x   for v2
+    ```
+   
+                              `
 
 4. then, run:  `python train.py`

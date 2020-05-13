@@ -15,7 +15,7 @@ args = ap.parse_args()
 
 
 torch_model=args.input
-npy_model=args.input
+npy_model=args.output
 
 net_structure=args.net_structure
 params=torch.load(torch_model, map_location=torch.device('cpu'))

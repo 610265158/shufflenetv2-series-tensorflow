@@ -26,15 +26,15 @@ config.TRAIN.iter_num_per_epoch = config.TRAIN.train_set_size // config.TRAIN.nu
 config.TRAIN.val_iter=config.TRAIN.val_set_size// config.TRAIN.num_gpu // config.TRAIN.batch_size
 
 config.TRAIN.lr_value_every_step = [0.001,0.01,0.01,0.001,0.0001,0.00001]          ####lr policy
-config.TRAIN.lr_decay_every_step = [300,500,600000,800000,1000000]
+config.TRAIN.lr_decay_every_step = [300,500,600000,800000,200000]
 config.TRAIN.lr_decay='cos'
 
 config.TRAIN.weight_decay_factor = 4.e-5                                    ####l2
 config.TRAIN.train_val_ratio= 0.9                                           ### nouse
 config.TRAIN.vis=False
 #### if to check the training data
-config.TRAIN.mix_precision=True                                            ##use mix precision to speedup, tf1.14 at least
-config.TRAIN.opt='Adam'                                                     ##Adam or SGD， sgd is more stable for resnet
+config.TRAIN.mix_precision=False                                            ##use mix precision to speedup, tf1.14 at least
+config.TRAIN.opt='sgd'                                                     ##Adam or SGD， sgd is more stable for resnet
 
 config.MODEL = edict()
 config.MODEL.continue_train=False                                           ##recover from a model completly
@@ -44,7 +44,7 @@ config.MODEL.win = 224
 config.MODEL.cls=1000
 
 config.MODEL.net_structure='ShuffleNetV2_Plus'
-config.MODEL.pretrained_model='ShuffleNetV2+.Small.pth.tar.npy'                    ##according to your model,
+config.MODEL.pretrained_model='ShuffleNetV2+.Small.npy'                    ##according to your model,
 config.MODEL.size='Small'     ##Small Medium Large   for v2+
                                 ##0.5x, 1.0x 1.5x 2.0x   for v2
 
@@ -53,7 +53,7 @@ config.DATA = edict()
 config.DATA.root_path=''
 config.DATA.train_txt_path='train.txt'
 config.DATA.val_txt_path='val.txt'
-config.DATA.rgb=True
+config.DATA.rgb=False
 ############ the model is trained with BGR mode
 
 
