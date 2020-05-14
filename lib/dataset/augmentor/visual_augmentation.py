@@ -127,10 +127,10 @@ class ColorDistort():
 
     def __init__(
             self,
-            contrast_range=(0.6, 1.4),
-            brightness_range=(-.4, .4),
-            hue_range=(-0.15, 0.15),
-            saturation_range=(0.6, 1.4)
+            contrast_range=(0.8, 1.2),
+            brightness_range=(-.2, .2),
+            hue_range=(-0.1, 0.1),
+            saturation_range=(0.8, 1.2)
     ):
         self.contrast_range = contrast_range
         self.brightness_range = brightness_range

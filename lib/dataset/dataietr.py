@@ -167,8 +167,8 @@ class ImageNetDataIter():
             #     strength = random.uniform(0, 50)
             #     image, _ = Affine_aug(image, strength=strength, label=None)
 
-            if random.uniform(0, 1) > 0.5:
-                image=self.color_augmentor(image)
+            #if random.uniform(0, 1) > 0.5:
+            image=self.color_augmentor(image)
             # if random.uniform(0, 1) > 1.0:
             #     image=pixel_jitter(image,15)
             # if random.uniform(0, 1) > 0.5:
