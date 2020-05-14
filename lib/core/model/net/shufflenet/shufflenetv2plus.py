@@ -174,7 +174,7 @@ def shufflenet(old_x,inp, oup, base_mid_channels, ksize, stride, activation, use
                    None,
                    ['8'],
                    ]
-
+    print('excuted here')
     main_scope=main_scope_list[scope_index]
     project_scope = project_scope_list[scope_index]
     se_scope=se_scope_list[scope_index]
@@ -507,6 +507,7 @@ def ShufflenetV2Plus(inputs,is_training=True,model_size=cfg.MODEL.size,include_h
                 input_channel = stage_out_channels[1]
 
                 inputs=torch_style_padding(inputs,3)
+
                 net = slim.conv2d(inputs,
                                   16,
                                   [3, 3],

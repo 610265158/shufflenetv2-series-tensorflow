@@ -4,6 +4,24 @@ import tensorflow.contrib.slim as slim
 from train_config import config as cfg
 
 
+def torch_style_padding(inputs,kernel_size,rate=1):
+
+    '''
+    by default tensorflow use different padding method with pytorch,
+    so we need do explicit padding before we do conv or pool
+    :param inputs:
+    :param kernel_size:
+    :param rate:
+    :return:
+    '''
+    kernel_size_effective = kernel_size + (kernel_size - 1) * (rate - 1)
+    pad_total = kernel_size_effective - 1
+    pad_beg = pad_total // 2
+    pad_end = pad_total - pad_beg
+    inputs = tf.pad(inputs,
+                    [[0, 0], [pad_beg, pad_end], [pad_beg, pad_end], [0, 0]])
+
+    return inputs
 
 def shuffle(z):
     # with tf.name_scope('shuffle_split'):
@@ -131,15 +149,17 @@ def ShuffleV2Block(old_x,inp, oup, base_mid_channels, ksize, stride,scope_index=
                     base_mid_channel,
                     [1, 1],
                     stride=1,
+                    padding='VALID',
                     activation_fn=act_func,
                     normalizer_fn=slim.batch_norm,
                     biases_initializer=None,
                     scope='branch_main/'+main_scope[0])
-
+    x = torch_style_padding(x, ksize)
     x = slim.separable_conv2d(x,
                               num_outputs=None,
                               kernel_size=[ksize, ksize],
                               stride=stride,
+                              padding='VALID',
                               activation_fn=None,
                               normalizer_fn=slim.batch_norm,
                               scope='branch_main/'+main_scope[1])
@@ -148,27 +168,31 @@ def ShuffleV2Block(old_x,inp, oup, base_mid_channels, ksize, stride,scope_index=
                     num_outputs=outputs,
                     kernel_size=[1, 1],
                     stride=1,
+                    padding='VALID',
                     activation_fn=act_func,
                     normalizer_fn=slim.batch_norm,
                     scope='branch_main/'+main_scope[2])
 
 
     if stride == 2:
+        x_proj = torch_style_padding(x_proj, ksize)
         x_proj = slim.separable_conv2d(x_proj,
-                                  num_outputs=None,
-                                  kernel_size=[ksize, ksize],
-                                  stride=stride,
-                                  activation_fn=None,
-                                  normalizer_fn=slim.batch_norm,
-                                  scope='branch_proj/'+project_scope[0])
+                                       num_outputs=None,
+                                       kernel_size=[ksize, ksize],
+                                       stride=stride,
+                                       padding='VALID',
+                                       activation_fn=None,
+                                       normalizer_fn=slim.batch_norm,
+                                       scope='branch_proj/'+project_scope[0])
 
         x_proj = slim.conv2d(x_proj,
-                  num_outputs=inp,
-                  kernel_size=[1, 1],
-                  stride=1,
-                  activation_fn=act_func,
-                  normalizer_fn=slim.batch_norm,
-                  scope='branch_proj/'+project_scope[1])
+                             num_outputs=inp,
+                             kernel_size=[1, 1],
+                             stride=1,
+                             padding='VALID',
+                             activation_fn=act_func,
+                             normalizer_fn=slim.batch_norm,
+                             scope='branch_proj/'+project_scope[1])
 
 
     res=tf.concat([x_proj,x],axis=3)
@@ -177,7 +201,7 @@ def ShuffleV2Block(old_x,inp, oup, base_mid_channels, ksize, stride,scope_index=
 
 
 def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
-                     batch_norm_decay=0.997,
+                     batch_norm_decay=0.9,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      use_batch_norm=True,
@@ -254,10 +278,19 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
         with slim.arg_scope([slim.batch_norm, slim.dropout], is_training=is_training):
             with tf.variable_scope('ShuffleNetV2'):
                 input_channel = stage_out_channels[1]
-                net = slim.conv2d(inputs, 24, [3, 3],stride=2, activation_fn=tf.nn.relu,
-                                  normalizer_fn=slim.batch_norm, scope='first_conv/0')
 
-                net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='SAME')
+
+                inputs=torch_style_padding(inputs,3)
+                net = slim.conv2d(inputs,
+                                  24,
+                                  [3, 3],
+                                  stride=2,
+                                  padding='VALID',
+                                  activation_fn=tf.nn.relu,
+                                  normalizer_fn=slim.batch_norm,
+                                  scope='first_conv/0')
+                net = torch_style_padding(net, 3)
+                net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='VALID')
 
                 fms = []
 
@@ -285,9 +318,10 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
 
                 if include_head:
                     x = slim.conv2d(net,
-                                    num_outputs=1024,
+                                    num_outputs=stage_out_channels[-1],
                                     kernel_size=[1, 1],
                                     stride=1,
+                                    padding='VALID',
                                     activation_fn=tf.nn.relu,
                                     normalizer_fn=slim.batch_norm,
                                     scope='conv_last/0')
@@ -298,12 +332,13 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
                         x=slim.dropout(x,0.8)
 
                     x=slim.conv2d(x,
-                                    num_outputs=cfg.MODEL.cls,
-                                    kernel_size=[1, 1],
-                                    stride=1,
-                                    activation_fn=None,
-                                    normalizer_fn=None,
-                                    scope='classifier/0')
+                                  num_outputs=cfg.MODEL.cls,
+                                  kernel_size=[1, 1],
+                                  stride=1,
+                                  padding='VALID',
+                                  activation_fn=None,
+                                  normalizer_fn=None,
+                                  scope='classifier/0')
 
         x = tf.squeeze(x, axis=1)
         x = tf.squeeze(x, axis=1)

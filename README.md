@@ -1,8 +1,11 @@
-# shufflenetv2
+# shufflenetv2-series-less
 
 ## introduction
-A shufflenetv2 implementation based on tensorflow. 
 
+
+A shufflenetv2 and shufflenetv2+ implementations based on tensorflow. 
+And the model pretrained are converted from pytorch.
+Basicly keep the same precision. 
 
 
 ## requirment
@@ -33,7 +36,7 @@ ShuffleNetV2+
 | :------:               |:------:       |:------:  |
 |  ShuffleNetV2+ Small   | 0.7407        |0.9167    |
 |  ShuffleNetV2+ Medium  | 0.7407        |0.9167    |
-|  ShuffleNetV2+ Large   | 0.7407        |0.9167    |
+|  ShuffleNetV2+ Large   | 0.7694        |0.9336    |
 
 ShuffleNetV2
 
@@ -41,6 +44,10 @@ ShuffleNetV2
 | :------:                 |:------:      |:------:  |
 |  ShuffleNetV2 0.5x	   | 0.601        |0.82|
 
+
+
+**Ps, I though that  the other structure listed in the offcial pytorch repo are not that important for now, 
+so i did not do that work. But i will do it when i got time.**
 ## useage
 
 ### train
