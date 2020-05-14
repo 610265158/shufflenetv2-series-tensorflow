@@ -2,9 +2,9 @@
 
 ## introduction
 
-
 A shufflenetv2 and shufflenetv2+ implementations based on tensorflow. 
-And the model pretrained are converted from pytorch.
+
+And the model pretrained are converted from official pytorch.
 Basicly keep the same precision. 
 
 
@@ -28,7 +28,7 @@ pretrained model:
 
 ### performance
 
-bascily the same with the offcial repo
+bascily the same with the official repo
 
 ##### tfversion
 ShuffleNetV2+
@@ -55,15 +55,15 @@ i thought there is some
 numerical problems .
 
 
-##### offcial pytorch version 
+##### official pytorch version 
 
 
 
-**Ps, I though that  the other structure listed in the offcial pytorch repo are not that important for now, 
+**Ps, I though that  the other structure listed in the official pytorch repo are not that important for now, 
 so i did not do that work. But i will do it when i got time.**
 ## useage
 
-### train
+### train  
 
 1. download imagenet
 
@@ -71,7 +71,6 @@ so i did not do that work. But i will do it when i got time.**
 then run ` python prepare_imagenet.py` produce train.txt and val.txt
 (if u like train u own data, u should prepare the data like this:
 `path.jpg|label` 
-
 
 3. download pretrained model from official repo
 
@@ -114,7 +113,6 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
 
 ### evaluation
 
-1. better convert the model to pb first by run `python tools/auto_freeze.py`,
- it reads from the last checkpint
+1. download the pretrained model from the link before
  
 2. `python eval.py --model shufflenet.pb`
