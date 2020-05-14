@@ -10,7 +10,7 @@ however there exits no good pretrained model for tensorflow developers.
 
 So the model were converted from the [official pytorch repo](https://github.com/megvii-model/ShuffleNet-Series), with barely no precision loss.
 
-Hope the codes helps you.
+Hope the codes can help you.
 
 
 ## requirment
@@ -51,7 +51,7 @@ Hope the codes helps you.
 |  ShuffleNetV2 1.5x	   | 27.5          |9.4        |
 |  ShuffleNetV2 2.0x	   | 24.9          |7.5        |
 
-oo somthing exciting happend when i convert the medium model, 
+Ops, somthing exciting happend when i convert the medium model, 
 top1 fucked up, but top5 is fine, 
 i thought there is some 
 numerical problems .
@@ -130,6 +130,6 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
 ```
     features=ShufflenetV2Plus(inputs,training_flag,model_size='Small',include_head=False):
     
-    by defaut it returns 4 level features, stride as 4,8,16,32
+    by defaut features is a list contains 4 level features, stride as 4,8,16,32
     
 ```
