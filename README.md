@@ -22,27 +22,40 @@ Basicly keep the same precision.
 
 pretrained model:
 
-+ [baidu disk](https://pan.baidu.com/s/1jPW9cq9V9sJDrcrtcqpmLQ)  (code wd5g)
-+ [google drive](https://drive.google.com/open?id=1YHtaLkalAqURbkIYYJBLf6HJZzd6vzOG)
++ [baidu disk](https://pan.baidu.com/s/1KwoglosUj_f1NqihlCOAjw)  (code fbur)
++ [google drive](https://drive.google.com/open?id=1yoS5P3cHhD3lO115axoG0aThPeztGvhF)
 
 
 ### performance
 
 bascily the same with the offcial repo
 
+##### tfversion
 ShuffleNetV2+
 
-| model                  |top1 acc       |top5 acc  |
+| model                  |top1 err       |top5 err  |
 | :------:               |:------:       |:------:  |
-|  ShuffleNetV2+ Small   | 0.7407        |0.9167    |
-|  ShuffleNetV2+ Medium  | 0.7407        |0.9167    |
-|  ShuffleNetV2+ Large   | 0.7694        |0.9336    |
+|  ShuffleNetV2+ Small   | 25.9          |   8.3    |
+|  ShuffleNetV2+ Medium  | 0.000x        |0.000x    |  
+|  ShuffleNetV2+ Large   | 23.0          |   6.6    |
+
 
 ShuffleNetV2
 
-| model                    |top1 acc      |top5 acc|
-| :------:                 |:------:      |:------:  |
-|  ShuffleNetV2 0.5x	   | 0.601        |0.82|
+| model                    |top1 acc       |top5 acc   |
+| :------:                 |:------:       |:------:   |
+|  ShuffleNetV2 0.5x	   | 38.9          |17.4       |
+|  ShuffleNetV2 1.0x	   | 30.7          |11.2       |
+|  ShuffleNetV2 1.5x	   | 27.5          |9.4        |
+|  ShuffleNetV2 2.0x	   | 24.9          |7.5        |
+
+oo somthing exciting happend when i convert the medium and 1.5x model, 
+top1 fucked up, but top5 is fine, 
+i thought there is some 
+numerical problems .
+
+
+##### offcial pytorch version 
 
 
 

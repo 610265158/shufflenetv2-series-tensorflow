@@ -60,8 +60,8 @@ def eval(models):
         total+=1
 
 
-    print('top1 acc:%f'%(top1_right/total))
-    print('top5 acc:%f'%(top5_right/total))
+    print('top1 err:%f'%(1-top1_right/total))
+    print('top5 err:%f'%(1-top5_right/total))
 
 if __name__=='__main__':
     import argparse

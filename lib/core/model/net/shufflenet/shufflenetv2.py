@@ -124,7 +124,7 @@ def ShuffleV2Block(old_x,inp, oup, base_mid_channels, ksize, stride,scope_index=
 
 
 
-    print('excuted here')
+
     main_scope=main_scope_list[scope_index]
     project_scope = project_scope_list[scope_index]
 
