@@ -20,7 +20,7 @@ Basicly keep the same precision.
 
 + python 3.6
 
-pretrained model:
+## pretrained model:
 
 + [baidu disk](https://pan.baidu.com/s/1KwoglosUj_f1NqihlCOAjw)  (code fbur)
 + [google drive](https://drive.google.com/open?id=1yoS5P3cHhD3lO115axoG0aThPeztGvhF)
@@ -28,9 +28,6 @@ pretrained model:
 
 ### performance
 
-bascily the same with the official repo
-
-##### tfversion
 ShuffleNetV2+
 
 | model                  |top1 err       |top5 err  |
@@ -49,18 +46,15 @@ ShuffleNetV2
 |  ShuffleNetV2 1.5x	   | 27.5          |9.4        |
 |  ShuffleNetV2 2.0x	   | 24.9          |7.5        |
 
-oo somthing exciting happend when i convert the medium and 1.5x model, 
+oo somthing exciting happend when i convert the medium model, 
 top1 fucked up, but top5 is fine, 
 i thought there is some 
 numerical problems .
 
 
-##### official pytorch version 
-
-
-
 **Ps, I though that  the other structure listed in the official pytorch repo are not that important for now, 
 so i did not do that work. But i will do it when i got time.**
+
 ## useage
 
 ### train  
