@@ -25,12 +25,15 @@ pretrained model:
 
 ### performance
 
-then trained tensorflow 
+bascily the same with the offcial repo
+
 ShuffleNetV2+
 
-| model                  |top1 acc      |top5 acc|
-| :------:               |:------:      |:------:  |
-|  ShuffleNetV2+ Small   | 0.735        |0.913|
+| model                  |top1 acc       |top5 acc  |
+| :------:               |:------:       |:------:  |
+|  ShuffleNetV2+ Small   | 0.7407        |0.9167    |
+|  ShuffleNetV2+ Medium  | 0.7407        |0.9167    |
+|  ShuffleNetV2+ Large   | 0.7407        |0.9167    |
 
 ShuffleNetV2
 
@@ -82,14 +85,11 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
         config.MODEL.size='0.5x'     ##Small Medium Large   for v2+
                                       ##0.5x, 1.0x 1.5x 2.0x   for v2
     ```
-    
-    
-**ps, the model precision is not keeped after convert, 
-and i thought, it is because the label order and some difference between pytorch and tensorflow,
-but it is fine after finetune the model with about 150,000 iters**
                               
 
-5. then, run:  `python train.py`
+5. then, run:  `python train.py`， it will save a ckpt model first.
+
+6. ` python tools/auto_freeze.py` convert to pb
 
 
 ### evaluation

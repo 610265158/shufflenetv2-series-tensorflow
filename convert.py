@@ -147,11 +147,6 @@ for k,v in params_dict.items():
             weights_name_torch=pre_str+'.'+str(cur_cnt)+'.'+'weight'
             weights_name_tf=pre_str+'.'+str(cur_cnt)+'.'+'weights:0'
 
-
-
-
-
-
         weights_name_tf=rename(weights_name_tf,'.','/')
 
         weights_name_tf = repalce(weights_name_tf, 'module', net_structure)
@@ -172,9 +167,9 @@ for k,v in params_dict.items():
 
 for k,v in params_dict_tf.items():
 
-
-    print(v)
-    print(k,v.shape)
+    if 'first' in k:
+        print(v)
+        print(k,v.shape)
 
 
 np.save(npy_model,params_dict_tf)
