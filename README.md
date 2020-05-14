@@ -110,3 +110,8 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
 1. download the pretrained model from the link before
  
 2. `python eval.py --model shufflenet.pb`
+
+
+### plain use to do classification
+
+`python vis.py --input yourimage.jpg --model yourmodel.pb`

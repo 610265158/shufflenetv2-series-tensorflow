@@ -1,14 +1,10 @@
-from lib.core.api.classifier import Shufflenet
 import numpy as np
-import os
-
-from tqdm import tqdm
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
 import cv2
+from tqdm import tqdm
+
 from train_config import config as cfg
 from lib.dataset.augmentor.augmentation import CenterCrop
-
+from lib.core.api.classifier import Shufflenet
 
 
 
@@ -17,7 +13,7 @@ from lib.dataset.augmentor.augmentation import CenterCrop
 def eval(models):
 
 
-    face = Shufflenet(models)
+    classifier = Shufflenet(models)
     center_crop = CenterCrop(target_size=224, resize_size=256)
 
     with open('val.txt','r') as f:
@@ -42,7 +38,7 @@ def eval(models):
         input=np.expand_dims(image,axis=0)
         label = np.array(_label)
 
-        res=face.run(input)
+        res=classifier.run(input)
 
         res=np.array(res[0])
 
