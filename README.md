@@ -1,11 +1,16 @@
 # shufflenetv2-series-less
 
 ## introduction
-
 A shufflenetv2 and shufflenetv2+ implementations based on tensorflow. 
 
-And the model pretrained are converted from official pytorch.
-Basicly keep the same precision. 
+Shufflenet series is a set of brilliant light DNN models that designed for mobile device mainly.
+
+It keeps slightly better accuracy and higher speed than mobilnet series, 
+however there exits no good pretrained model for tensorflow developers.
+
+So the model were converted from the [official pytorch repo](https://github.com/megvii-model/ShuffleNet-Series), with barely no precision loss.
+
+Hope the codes helps you.
 
 
 ## requirment
@@ -28,7 +33,7 @@ Basicly keep the same precision.
 
 ### performance
 
-ShuffleNetV2+
+* ShuffleNetV2+
 
 | model                  |top1 err       |top5 err  |
 | :------:               |:------:       |:------:  |
@@ -37,9 +42,9 @@ ShuffleNetV2+
 |  ShuffleNetV2+ Large   | 23.0          |   6.6    |
 
 
-ShuffleNetV2
+*  ShuffleNetV2
 
-| model                    |top1 acc       |top5 acc   |
+| model                    |top1 err       |top5 err   |
 | :------:                 |:------:       |:------:   |
 |  ShuffleNetV2 0.5x	   | 38.9          |17.4       |
 |  ShuffleNetV2 1.0x	   | 30.7          |11.2       |
@@ -58,6 +63,8 @@ so i did not do that work. But i will do it when i got time.**
 ## useage
 
 ### train  
+
+Actully you don't need to train them. It has the same params with the official one.
 
 1. download imagenet
 
@@ -115,3 +122,14 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
 ### plain use to do classification
 
 `python vis.py --input yourimage.jpg --model yourmodel.pb`
+
+
+
+### use as backbone 
+
+```
+    features=ShufflenetV2Plus(inputs,training_flag,model_size='Small',include_head=False):
+    
+    by defaut it returns 4 level features, stride as 4,8,16,32
+    
+```
