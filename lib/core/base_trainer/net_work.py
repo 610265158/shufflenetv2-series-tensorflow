@@ -13,6 +13,8 @@ from lib.dataset.dataietr import DataIter
 
 from lib.core.model.net.shufflenet.shufflenetv2plus import ShufflenetV2Plus
 from lib.core.model.net.shufflenet.shufflenetv2 import ShufflenetV2
+from lib.core.model.net.shufflenet.shufflenetv2_5x5 import ShuffleNetV2_5x5
+
 from lib.helper.logger import logger
 
 from lib.core.base_trainer.metric import Metric
@@ -95,7 +97,9 @@ class trainner():
 
                     print(variables)
 
-                    self._sess.run(variables.assign( params_dict[variables.name]))
+                    #### the second control is for shufflenet_5x5, and weiinit it by 1.
+                    if 'second' not in variables.name:
+                        self._sess.run(variables.assign( params_dict[variables.name]))
 
 
 
@@ -144,6 +148,8 @@ class trainner():
             net = ShufflenetV2Plus
         elif 'ShuffleNetV2' ==cfg.MODEL.net_structure:
             net = ShufflenetV2
+        elif 'ShuffleNetV2_5x5' == cfg.MODEL.net_structure:
+            net = ShuffleNetV2_5x5
         else:
             raise NotImplementedError
 
