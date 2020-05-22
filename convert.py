@@ -120,7 +120,15 @@ for k,v in params_dict.items():
             
             '''
             if 'depthwise_weights' in weights_name_tf:
-                params_dict_tf[weights_name_tf] = np.array(params_dict[weights_name_torch]).transpose(2, 3, 0, 1)
+                if '5x5' in net_structure:
+                    cur_params = np.array(params_dict[weights_name_torch])
+                    o, i, h, w = cur_params.shape
+                    cur_params_5x5 = np.ones(shape=[o, i, 5, 5])
+
+                    cur_params_5x5[:, :, 1:4, 1:4] = cur_params
+                    params_dict_tf[weights_name_tf] = cur_params_5x5.transpose(2, 3, 0, 1)
+                else:
+                    params_dict_tf[weights_name_tf] = np.array(params_dict[weights_name_torch]).transpose(2, 3, 0, 1)
             else:
                 params_dict_tf[weights_name_tf]=np.array(params_dict[weights_name_torch]).transpose(2,3,1,0)
         except:
@@ -156,7 +164,16 @@ for k,v in params_dict.items():
 
         try:
             if 'depthwise_weights' in weights_name_tf:
-                params_dict_tf[weights_name_tf] = np.array(params_dict[weights_name_torch]).transpose(2, 3, 0, 1)
+
+                if '5x5' in net_structure:
+                    cur_params=np.array(params_dict[weights_name_torch])
+                    o,i,h,w=cur_params.shape
+                    cur_params_5x5=np.ones(shape=[o,i,5,5])
+
+                    cur_params_5x5[:,:,1:4,1:4]=cur_params
+                    params_dict_tf[weights_name_tf] = cur_params_5x5.transpose(2, 3, 0, 1)
+                else:
+                    params_dict_tf[weights_name_tf] = np.array(params_dict[weights_name_torch]).transpose(2, 3, 0, 1)
             else:
                 params_dict_tf[weights_name_tf]=np.array(params_dict[weights_name_torch]).transpose(2,3,1,0)
         except:
