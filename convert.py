@@ -110,7 +110,7 @@ for k, v in params_dict.items():
                 if '5x5' in net_structure:
                     cur_params = np.array(params_dict[weights_name_torch])
                     o, i, h, w = cur_params.shape
-                    cur_params_5x5 = np.ones(shape=[o, i, 5, 5])
+                    cur_params_5x5 = np.zeros(shape=[o, i, 5, 5])
 
                     cur_params_5x5[:, :, 1:4, 1:4] = cur_params
                     params_dict_tf[weights_name_tf] = cur_params_5x5.transpose(2, 3, 0, 1)
@@ -151,7 +151,7 @@ for k, v in params_dict.items():
                 if '5x5' in net_structure:
                     cur_params = np.array(params_dict[weights_name_torch])
                     o, i, h, w = cur_params.shape
-                    cur_params_5x5 = np.ones(shape=[o, i, 5, 5])
+                    cur_params_5x5 = np.zeros(shape=[o, i, 5, 5])
 
                     cur_params_5x5[:, :, 1:4, 1:4] = cur_params
                     params_dict_tf[weights_name_tf] = cur_params_5x5.transpose(2, 3, 0, 1)
