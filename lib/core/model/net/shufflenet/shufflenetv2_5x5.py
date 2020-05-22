@@ -23,60 +23,63 @@ def torch_style_padding(inputs,kernel_size,rate=1):
 
     return inputs
 
-def shuffle(z):
-    # with tf.name_scope('shuffle_split'):
-    #     shape = tf.shape(z)
-    #     batch_size = shape[0]
-    #     height, width = z.shape[1].value, z.shape[2].value
-    #
-    #     depth = z.shape[3].value
-    #
-    #     if cfg.MODEL.deployee:
-    #         z = tf.reshape(z, [ height, width, 2, depth//2])  # shape [batch_size, height, width, 2, depth]
-    #
-    #         z = tf.transpose(z, [0, 1, 3, 2])
-    #
-    #     else:
-    #         z = tf.reshape(z, [batch_size, height, width, 2, depth//2])# shape [batch_size, height, width, 2, depth]
-    #
-    #         z = tf.transpose(z, [0, 1, 2, 4, 3])
-    #
-    #     z = tf.reshape(z, [batch_size, height, width, depth])
-    #     x, y = tf.split(z, num_or_size_splits=2, axis=3)
-    #     return x, y
-    with tf.name_scope('shuffle_split'):
+def shuffle(z, torch_style_shuffle=False):
 
-        z=tf.transpose(z,perm=[0,3,1,2])
+    if not torch_style_shuffle:
+        with tf.name_scope('shuffle_split'):
+            shape = tf.shape(z)
+            batch_size = shape[0]
+            height, width = z.shape[1].value, z.shape[2].value
 
-        shape = tf.shape(z)
-        batch_size = shape[0]
-        height, width = z.shape[2].value, z.shape[3].value
+            depth = z.shape[3].value
 
-        depth = z.shape[1].value
+            if cfg.MODEL.deployee:
+                z = tf.reshape(z, [ height, width, 2, depth//2])  # shape [batch_size, height, width, 2, depth]
 
-        if cfg.MODEL.deployee:
-            z = tf.reshape(z,[batch_size * depth // 2, 2, height * width])  # shape [batch_size, height, width, 2, depth]
+                z = tf.transpose(z, [0, 1, 3, 2])
 
-            z = tf.transpose(z, [1, 0, 2])
-            z = tf.reshape(z, [batch_size*2,  depth // 2, height, width])
+            else:
+                z = tf.reshape(z, [batch_size, height, width, 2, depth//2])# shape [batch_size, height, width, 2, depth]
 
-            z = tf.transpose(z, perm=[0, 2, 3, 1])
+                z = tf.transpose(z, [0, 1, 2, 4, 3])
 
-            x, y = tf.split(z, num_or_size_splits=2, axis=0)
+            z = tf.reshape(z, [batch_size, height, width, depth])
+            x, y = tf.split(z, num_or_size_splits=2, axis=3)
+            return x, y
+    else:
+        with tf.name_scope('shuffle_split'):
 
+            z=tf.transpose(z,perm=[0,3,1,2])
 
-        else:
-            z = tf.reshape(z, [batch_size*depth//2,2, height* width])# shape [batch_size, height, width, 2, depth]
+            shape = tf.shape(z)
+            batch_size = shape[0]
+            height, width = z.shape[2].value, z.shape[3].value
 
-            z = tf.transpose(z, [1,0,2])
-            z = tf.reshape(z, [batch_size*2, depth // 2, height , width])
-            z = tf.transpose(z, perm=[0, 2, 3, 1])
-            x, y = tf.split(z, num_or_size_splits=2, axis=0)
+            depth = z.shape[1].value
+
+            if cfg.MODEL.deployee:
+                z = tf.reshape(z,[batch_size * depth // 2, 2, height * width])  # shape [batch_size, height, width, 2, depth]
+
+                z = tf.transpose(z, [1, 0, 2])
+                z = tf.reshape(z, [batch_size*2,  depth // 2, height, width])
+
+                z = tf.transpose(z, perm=[0, 2, 3, 1])
+
+                x, y = tf.split(z, num_or_size_splits=2, axis=0)
 
 
+            else:
+                z = tf.reshape(z, [batch_size*depth//2,2, height* width])# shape [batch_size, height, width, 2, depth]
+
+                z = tf.transpose(z, [1,0,2])
+                z = tf.reshape(z, [batch_size*2, depth // 2, height , width])
+                z = tf.transpose(z, perm=[0, 2, 3, 1])
+                x, y = tf.split(z, num_or_size_splits=2, axis=0)
 
 
-        return x, y
+
+
+            return x, y
 
 def ShuffleV2Block(old_x,inp, oup, base_mid_channels, ksize, stride,scope_index=0):
 
@@ -292,7 +295,7 @@ def ShuffleNetV2_5x5(inputs,is_training=True,model_size=cfg.MODEL.size,include_h
                 net = torch_style_padding(net, 3)
                 net = slim.max_pool2d(net,kernel_size=3,stride=2,padding='VALID')
 
-                fms = []
+                fms = [net]
 
                 feature_cnt=0
                 for idxstage in range(len(stage_repeats)):
@@ -303,10 +306,10 @@ def ShuffleNetV2_5x5(inputs,is_training=True,model_size=cfg.MODEL.size,include_h
                         with tf.variable_scope('features/%d' % (feature_cnt)):
                             if i == 0:
                                 net=ShuffleV2Block(net,input_channel, output_channel,
-                                                                    base_mid_channels=output_channel // 2, ksize=3, stride=2,scope_index=feature_cnt)
+                                                                    base_mid_channels=output_channel // 2, ksize=5, stride=2,scope_index=feature_cnt)
                             else:
                                 net=ShuffleV2Block(net,input_channel // 2, output_channel,
-                                                                    base_mid_channels=output_channel // 2, ksize=3, stride=1,scope_index=feature_cnt)
+                                                                    base_mid_channels=output_channel // 2, ksize=5, stride=1,scope_index=feature_cnt)
 
                         input_channel = output_channel
                         feature_cnt+=1

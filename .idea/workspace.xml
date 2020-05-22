@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c088ec24-a808-400e-b963-3e708b6c70f8" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/base_trainer/net_work.py" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/base_trainer/net_work.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/model/net/shufflenet/shufflenetv2_5x5.py" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/model/net/shufflenet/shufflenetv2_5x5.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
