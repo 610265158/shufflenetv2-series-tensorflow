@@ -90,27 +90,28 @@ class trainner():
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
 
 
+
+
+                ##filter
+                if cfg.MODEL.cls != 1000:
+                    variables_restore = [x for x in variables_restore if 'classifier' not in x.name]
+
+                print(variables_restore)
                 for i,variables in enumerate(variables_restore):
 
                     logger.info('assign %s with np data'%(variables.name) )
 
-
-                    print(variables)
-
-                    #### the second control is for shufflenet_5x5, and weiinit it by 1.
-                    if 'second' not in variables.name:
-                        self._sess.run(variables.assign( params_dict[variables.name]))
-
-
-
-                    #var=self._sess.run(variables)
-                    #print(var)
+                    self._sess.run(variables.assign( params_dict[variables.name]))
 
             elif cfg.MODEL.pretrained_model is not None :
                 #########################restore the params
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
-                print(variables_restore)
 
+
+
+                if cfg.MODEL.cls != 1000:
+                    variables_restore=[x for x in variables_restore if 'classifier' not in x.name]
+                print(variables_restore)
                 saver2 = tf.train.Saver(variables_restore)
                 saver2.restore(self._sess, cfg.MODEL.pretrained_model)
 
