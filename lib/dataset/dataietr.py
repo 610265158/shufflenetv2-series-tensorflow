@@ -114,7 +114,7 @@ class ImageNetDataIter():
         self.shuffle = shuffle
 
         self.color_augmentor = ColorDistort()
-        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win))
+        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win),scale=[0.8,1.2])
         self.center_crop=CenterCrop(target_size=224,resize_size=256)
 
         self.lst = self.parse_file(img_root_path, ann_file)
@@ -146,39 +146,48 @@ class ImageNetDataIter():
     def _map_func(self,dp,is_training):
         """Data augmentation function."""
         ####customed here
-        fname, ann = dp
-        image = cv2.imread(fname, cv2.IMREAD_COLOR)
-        if cfg.DATA.rgb:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        label = np.array(ann)
-
-        if is_training:
-
-            image=self.random_crop_resize(image)
-
-            if random.uniform(0, 1) > 0.5:
-                image, _ = Mirror(image, label=None, symmetry=None)
-            # if random.uniform(0, 1) > 0.5:
-            #     angle = random.uniform(-15, 15)
-            #     image, _ = Rotate_aug(image, label=None, angle=angle)
-
-            # if random.uniform(0, 1) > 1.:
-            #     strength = random.uniform(0, 50)
-            #     image, _ = Affine_aug(image, strength=strength, label=None)
-
-            #if random.uniform(0, 1) > 0.5:
-            image=self.color_augmentor(image)
-            # if random.uniform(0, 1) > 1.0:
-            #     image=pixel_jitter(image,15)
-            # if random.uniform(0, 1) > 0.5:
-            #     image = Img_dropout(image, 0.2)
-
-        else:
-            ###centercrop
-            image = self.center_crop(image)
 
 
-        label = label.astype(np.int64)
-        image= image.astype(np.uint8)
+
+        try:
+            fname, ann = dp
+            image = cv2.imread(fname, cv2.IMREAD_COLOR)
+            if cfg.DATA.rgb:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            label = np.array(ann)
+
+            if is_training:
+
+                image=self.random_crop_resize(image)
+
+                if random.uniform(0, 1) > 0.5:
+                    image, _ = Mirror(image, label=None, symmetry=None)
+                # if random.uniform(0, 1) > 0.5:
+                #     angle = random.uniform(-15, 15)
+                #     image, _ = Rotate_aug(image, label=None, angle=angle)
+
+                # if random.uniform(0, 1) > 1.:
+                #     strength = random.uniform(0, 50)
+                #     image, _ = Affine_aug(image, strength=strength, label=None)
+
+                #if random.uniform(0, 1) > 0.5:
+                image=self.color_augmentor(image)
+                # if random.uniform(0, 1) > 1.0:
+                #     image=pixel_jitter(image,15)
+                # if random.uniform(0, 1) > 0.5:
+                #     image = Img_dropout(image, 0.2)
+
+            else:
+                ###centercrop
+                image = self.center_crop(image)
+
+
+            label = label.astype(np.int64)
+            image= image.astype(np.uint8)
+        except:
+            logger.info('some err happended with %s'%fname, ' but handled with -1')
+            image=np.zeros(shape=[cfg.MODEL.hin,cfg.MODEL.win,3],dtype=np.uint8)
+            label = np.array(-1,dtype=np.int64)
+
         return image, label

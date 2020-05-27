@@ -156,6 +156,10 @@ class trainner():
 
         logits = net(images,training,include_head=True)
 
+        mask=labels>=0
+
+        labels = labels[mask]
+        logits= logits[mask]
         onehot_labels=tf.one_hot(labels,depth=cfg.MODEL.cls)
         cls_loss=slim.losses.softmax_cross_entropy(logits=logits,onehot_labels=onehot_labels,label_smoothing=0.1)
 

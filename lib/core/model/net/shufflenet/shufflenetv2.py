@@ -258,7 +258,7 @@ def shufflenet_arg_scope(weight_decay=cfg.TRAIN.weight_decay_factor,
 
 
 
-def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=False):
+def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=False,keep_prob=1.):
     stage_repeats = [4, 8, 4]
     model_size = model_size
     if model_size == '0.5x':
@@ -327,9 +327,10 @@ def ShufflenetV2(inputs,is_training=True,model_size=cfg.MODEL.size,include_head=
                                     scope='conv_last/0')
 
                     x=tf.reduce_mean(x,axis=[1,2],keep_dims=True)
-
-                    if model_size=='2.0x':
-                        x=slim.dropout(x,0.8)
+                    if  model_size == '2.0x' :
+                       keep_prob=0.8
+                    if keep_prob<1.:
+                        x=slim.dropout(x,keep_prob)
 
                     x=slim.conv2d(x,
                                   num_outputs=cfg.MODEL.cls,

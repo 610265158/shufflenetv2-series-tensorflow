@@ -65,7 +65,7 @@ if __name__=='__main__':
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--ratio", required=False, default=0.8,type=float, help="train val split ratio")
-    ap.add_argument("--datadir", required=False, default="IMAGENET", help="train val split ratio")
+    ap.add_argument("--data_dir", required=False, default="IMAGENET", help="train val split ratio")
 
     args = ap.parse_args()
 
