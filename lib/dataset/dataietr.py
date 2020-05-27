@@ -114,7 +114,7 @@ class ImageNetDataIter():
         self.shuffle = shuffle
 
         self.color_augmentor = ColorDistort()
-        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win),scale=[0.8,1.2])
+        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win))
         self.center_crop=CenterCrop(target_size=224,resize_size=256)
 
         self.lst = self.parse_file(img_root_path, ann_file)
