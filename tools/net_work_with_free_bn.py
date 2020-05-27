@@ -1,6 +1,7 @@
 #-*-coding:utf-8-*-
 
-
+import sys
+sys.path.append('.')
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import time
@@ -9,18 +10,37 @@ import cv2
 
 
 from train_config import config as cfg
-from lib.dataset.dataietr import DataIter
+
 
 from lib.core.model.net.shufflenet.shufflenetv2plus import ShufflenetV2Plus
 from lib.core.model.net.shufflenet.shufflenetv2 import ShufflenetV2
+from lib.core.model.net.shufflenet.shufflenetv2_5x5 import ShuffleNetV2_5x5
+
 from lib.helper.logger import logger
 
 from lib.core.base_trainer.metric import Metric
 
+
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--pretrained_model", help="the trained ckpt file",
+                    type=str)
+args = parser.parse_args()
+pretrained_model=args.pretrained_model
+
+
+
+saved_file='./model/shufflenet_deploy.ckpt'
+cfg.MODEL.deployee=True
+if cfg.MODEL.deployee:
+    cfg.TRAIN.batch_size = 1
+    cfg.TRAIN.lock_basenet_bn=True
+
 class trainner():
     def __init__(self):
-        self.train_ds=DataIter(cfg.DATA.root_path,cfg.DATA.train_txt_path,True)
-        self.val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,False)
+        # self.train_ds=DataIter(cfg.DATA.root_path,cfg.DATA.train_txt_path,True)
+        # self.val_ds = DataIter(cfg.DATA.root_path,cfg.DATA.val_txt_path,False)
 
 
         self.inputs=[]
@@ -36,11 +56,7 @@ class trainner():
 
         self.ema_weights = False
 
-
-
         self.metric=Metric(cfg.TRAIN.batch_size)
-
-
 
         self.train_dict={}
     def get_opt(self):
@@ -75,43 +91,14 @@ class trainner():
 
         with self._graph.as_default():
 
-            if cfg.MODEL.continue_train:
+            if 1:
                 #########################restore the params
                 variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES)
                 print(variables_restore)
 
                 saver2 = tf.train.Saver(variables_restore)
-                saver2.restore(self._sess, cfg.MODEL.pretrained_model)
+                saver2.restore(self._sess, pretrained_model)
 
-            elif 'npy' in cfg.MODEL.pretrained_model:
-
-
-                params_dict=np.load(cfg.MODEL.pretrained_model,allow_pickle=True).item()
-
-                #########################restore the params
-                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
-                print(variables_restore)
-
-                for variables in variables_restore:
-                    if variables.name in params_dict:
-                        logger.info('assign %s with np data'%(variables.name), )
-                        tf.assign(variables, params_dict[variables.name])
-
-            elif cfg.MODEL.pretrained_model is not None :
-                #########################restore the params
-                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
-                print(variables_restore)
-
-                saver2 = tf.train.Saver(variables_restore)
-                saver2.restore(self._sess, cfg.MODEL.pretrained_model)
-
-
-
-            else:
-                variables_restore = tf.get_collection(tf.GraphKeys.MODEL_VARIABLES, scope=cfg.MODEL.net_structure)
-                print(variables_restore)
-                logger.info('no pretrained model, train from sctrach')
-                # Build an initialization operation to run below.
 
     def add_summary(self, event):
         self.summaries.append(event)
@@ -135,13 +122,21 @@ class trainner():
         # assemble the total_loss using a custom function below.
 
 
-        if 'Plus' in cfg.MODEL.net_structure:
+        if 'ShuffleNetV2_Plus' ==cfg.MODEL.net_structure:
             net = ShufflenetV2Plus
-        else:
+        elif 'ShuffleNetV2' ==cfg.MODEL.net_structure:
             net = ShufflenetV2
+        elif 'ShuffleNetV2_5x5' == cfg.MODEL.net_structure:
+            net = ShuffleNetV2_5x5
+        else:
+            raise NotImplementedError
 
-        logits = net(images,training,include_head=True)
+        logits = net(images,False,include_head=True)
 
+        mask=labels>=0
+
+        labels = labels[mask]
+        logits= logits[mask]
         onehot_labels=tf.one_hot(labels,depth=cfg.MODEL.cls)
         cls_loss=slim.losses.softmax_cross_entropy(logits=logits,onehot_labels=onehot_labels,label_smoothing=0.1)
 
@@ -324,124 +319,10 @@ class trainner():
             # Create a saver.
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=None)
 
-            # Build the summary operation from the last tower summaries.
-            self.summary_op = tf.summary.merge(self.summaries)
 
-            self.summary_writer = tf.summary.FileWriter(cfg.MODEL.model_path, self._sess.graph)
+            logger.info('A tmp model  saved as %s \n' % saved_file)
+            self.saver.save(self._sess, save_path=saved_file)
 
-        min_loss_control=1000.
-        for epoch in range(cfg.TRAIN.epoch):
-            self._train(epoch)
-            val_loss=self._val(epoch)
-            logger.info('**************'
-                       'val_loss %f '%(val_loss))
-
-            #tmp_model_name=cfg.MODEL.model_path + \
-            #               'epoch_' + str(epoch ) + \
-            #               'L2_' + str(cfg.TRAIN.weight_decay_factor) + \
-            #               '.ckpt'
-            #logger.info('save model as %s \n'%tmp_model_name)
-            #self.saver.save(self.sess, save_path=tmp_model_name)
-
-            if 1:
-                min_loss_control=val_loss
-                low_loss_model_name = cfg.MODEL.model_path + \
-                                 'epoch_' + str(epoch) + \
-                                 'L2_' + str(cfg.TRAIN.weight_decay_factor)  + '.ckpt'
-                logger.info('A new low loss model  saved as %s \n' % low_loss_model_name)
-                self.saver.save(self._sess, save_path=low_loss_model_name)
-
-        self._sess.close()
-
-
-    def _train(self,_epoch):
-        for step in range(cfg.TRAIN.iter_num_per_epoch):
-            self.ite_num += 1
-            start_time = time.time()
-
-            example_images, example_labels = next(self.train_ds)
-
-            ########show_flag check the data
-            if cfg.TRAIN.vis:
-                for i in range(cfg.TRAIN.batch_size):
-                    example_image = example_images[i, :, :, :]
-                    example_label = example_labels[i]
-
-
-                    print(example_label)
-                    cv2.namedWindow('img', 0)
-                    cv2.imshow('img', example_image.astype(np.uint8))
-                    cv2.waitKey(0)
-
-            fetch_duration = time.time() - start_time
-
-
-            for n in range(cfg.TRAIN.num_gpu):
-                self.train_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
-                self.train_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
-
-            self.train_dict[self.inputs[2]] = True
-            _, total_loss_value, loss_value, top1_acc_value, top5_acc_value, l2_loss_value, learn_rate, = \
-                self._sess.run([*self.outputs],
-                         feed_dict=self.train_dict)
-
-
-
-            duration = time.time() - start_time
-            run_duration = duration - fetch_duration
-            if self.ite_num % cfg.TRAIN.log_interval == 0:
-                num_examples_per_step = cfg.TRAIN.batch_size * cfg.TRAIN.num_gpu
-                examples_per_sec = num_examples_per_step / duration
-                sec_per_batch = duration / cfg.TRAIN.num_gpu
-
-                format_str = ('epoch %d: iter %d, '
-                              'total_loss=%.6f '
-                              'loss=%.6f '
-                              'top1 acc=%.6f '
-                              'top5 acc=%.6f '
-                              'l2_loss=%.6f '
-                              'learn_rate =%e '
-                              '(%.1f examples/sec; %.3f sec/batch) '
-                              'fetch data time = %.6f'
-                              'run time = %.6f')
-                logger.info(format_str % (_epoch,
-                                          self.ite_num,
-                                          total_loss_value,
-                                          loss_value,
-                                          top1_acc_value,
-                                          top5_acc_value,
-                                          l2_loss_value,
-                                          learn_rate,
-                                          examples_per_sec,
-                                          sec_per_batch,
-                                          fetch_duration,
-                                          run_duration))
-
-            # if self.ite_num % 100 == 0:
-            #     summary_str = self._sess.run(self.summary_op, feed_dict=self.train_dict)
-            #     self.summary_writer.add_summary(summary_str, self.ite_num)
-
-    def _val(self,_epoch):
-
-
-        all_total_loss=0
-        for step in range(cfg.TRAIN.val_iter):
-
-            example_images, example_labels = next(self.val_ds)  # 在会话中取出image和label
-
-            feed_dict = {}
-            for n in range(cfg.TRAIN.num_gpu):
-                feed_dict[self.inputs[0][n]] = example_images[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size, :,:,:]
-                feed_dict[self.inputs[1][n]] = example_labels[n * cfg.TRAIN.batch_size:(n + 1) * cfg.TRAIN.batch_size]
-            feed_dict[self.inputs[2]] = False
-            total_loss_value, loss_value, top1_acc_value, top5_acc_value, l2_loss_value, learn_rate = \
-                self._sess.run([*self.val_outputs],
-                              feed_dict=feed_dict)
-
-            all_total_loss+=total_loss_value-l2_loss_value
-            self.metric.update(top1_acc_value,top5_acc_value)
-        self.metric.report()
-        return all_total_loss/cfg.TRAIN.val_iter
 
     def train(self):
         self.loop()
@@ -451,6 +332,8 @@ class trainner():
 
 
 
+tmp_trainer=trainner()
 
+tmp_trainer.train()
 
 
