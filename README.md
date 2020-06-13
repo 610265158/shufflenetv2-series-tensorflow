@@ -50,7 +50,7 @@ Hope the codes can help you.
 |  ShuffleNetV2 1.0x	   | 30.7          |11.2       |
 |  ShuffleNetV2 1.5x	   | 27.5          |9.4        |
 |  ShuffleNetV2 2.0x	   | 24.9          |7.5        |
-
+|  ShuffleNetV2_5x5 1.0x   | 30.7          |11.2       |
 Ops, somthing exciting happend when i convert the medium model, 
 top1 fucked up, but top5 is fine, 
 i thought there is some 
@@ -103,6 +103,22 @@ then run ` python prepare_imagenet.py` produce train.txt and val.txt
         config.MODEL.net_structure='ShuffleNetV2'
         config.MODEL.pretrained_model='ShuffleNetV2.0.5x.npy'                    ##according to your model,
         config.MODEL.size='0.5x'     ##Small Medium Large   for v2+
+                                      ##0.5x, 1.0x 1.5x 2.0x   for v2
+                                      
+                                      
+                                      
+    example  ShuffleNetV2_5x5.1.0x
+    
+    we pad 3x3 as 5x5 with 1
+    
+    4.1 run python convert.py --input ShuffleNetV2.1.0x.pth.tar 
+                              --output ShuffleNetV2.1.0x
+                              --net_structure ShuffleNetV2_5x5
+                              
+    4.2 modify config as:
+        config.MODEL.net_structure='ShuffleNetV2_5x5'
+        config.MODEL.pretrained_model='ShuffleNetV2.1.0x.npy'                    ##according to your model,
+        config.MODEL.size='1.0x'     ##Small Medium Large   for v2+
                                       ##0.5x, 1.0x 1.5x 2.0x   for v2
     ```
                               
