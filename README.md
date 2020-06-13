@@ -51,6 +51,7 @@ Hope the codes can help you.
 |  ShuffleNetV2 1.5x	   | 27.5          |9.4        |
 |  ShuffleNetV2 2.0x	   | 24.9          |7.5        |
 |  ShuffleNetV2_5x5 1.0x   | 30.7          |11.2       |
+
 Ops, somthing exciting happend when i convert the medium model, 
 top1 fucked up, but top5 is fine, 
 i thought there is some 
