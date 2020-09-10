@@ -113,13 +113,14 @@ class ImageNetDataIter():
         self.training_flag = training_flag
         self.shuffle = shuffle
 
-        self.color_augmentor = ColorDistort()
-        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win))
+        self.color_augmentor = ColorDistort(contrast_range=(0.8, 1.2),
+            brightness_range=(-.2, .2),
+            hue_range=None,
+            saturation_range=(0.8, 1.2))
+        self.random_crop_resize=RandomResizedCrop(size=(cfg.MODEL.hin,cfg.MODEL.win),scale=(0.7,1.3))
         self.center_crop=CenterCrop(target_size=224,resize_size=256)
 
         self.lst = self.parse_file(img_root_path, ann_file)
-
-
 
 
     def __iter__(self):
@@ -142,6 +143,29 @@ class ImageNetDataIter():
         all_samples = ann_info.get_all_sample()
 
         return all_samples
+    def random_dash(self,src,how_many=8,block_size=64):
+
+        ### we get the mask first
+
+        def get_random_mask(image, block_size=32):
+
+            h,w,c=image.shape
+            mask = np.ones_like(image, dtype=np.uint8)
+            for i in range(how_many):
+
+                start_x = int(random.uniform(0,w-block_size))
+                start_y = int(random.uniform(0, w - block_size))
+
+                mask[start_y:start_y+block_size,start_x:start_x+block_size,:]=0
+            return mask
+
+        mask=get_random_mask(src,block_size)
+
+        masked_src=src*mask
+
+
+        return masked_src
+
 
     def _map_func(self,dp,is_training):
         """Data augmentation function."""
@@ -163,20 +187,20 @@ class ImageNetDataIter():
 
                 if random.uniform(0, 1) > 0.5:
                     image, _ = Mirror(image, label=None, symmetry=None)
-                # if random.uniform(0, 1) > 0.5:
-                #     angle = random.uniform(-15, 15)
-                #     image, _ = Rotate_aug(image, label=None, angle=angle)
+                if random.uniform(0, 1) > 0.5:
+                    angle = random.uniform(-45, 45)
+                    image, _ = Rotate_aug(image, label=None, angle=angle)
 
-                # if random.uniform(0, 1) > 1.:
-                #     strength = random.uniform(0, 50)
-                #     image, _ = Affine_aug(image, strength=strength, label=None)
+                if random.uniform(0, 1) > 1.:
+                    strength = random.uniform(0, 50)
+                    image, _ = Affine_aug(image, strength=strength, label=None)
 
-                #if random.uniform(0, 1) > 0.5:
-                image=self.color_augmentor(image)
-                # if random.uniform(0, 1) > 1.0:
-                #     image=pixel_jitter(image,15)
-                # if random.uniform(0, 1) > 0.5:
-                #     image = Img_dropout(image, 0.2)
+                if random.uniform(0, 1) > 0.5:
+                    image=self.color_augmentor(image)
+                if random.uniform(0, 1) > 1.0:
+                    image=pixel_jitter(image,15)
+                if random.uniform(0, 1) > 0.5:
+                    image = Img_dropout(image, 0.2)
 
             else:
                 ###centercrop
